@@ -1,0 +1,18 @@
+[Unit]
+Description=ElastAlert
+Requires=elasticsearch.service
+After=syslog.target elasticsearch.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+#WorkingDirectory=/root/
+ExecStart=/usr/bin/python2 -m elastalert.elastalert --verbose --config /etc/elastalert/config.yaml
+StandardOutput=syslog
+StandardError=syslog
+KillSignal=SIGKILL
+PIDFile=/var/run/elastalert.pid
+
+[Install]
+WantedBy=multi-user.target

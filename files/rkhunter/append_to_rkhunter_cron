@@ -1,0 +1,16 @@
+
+# Email if errors or warnings are found on a machine
+if [ -f /var/log/rkhunter.log ] ; then
+	# Due to a bug in rkhunter, we have to ignore 2 warnings: /dev/.udev and /dev/.initramfs
+	egrep "Warn|Err" /var/log/rkhunter.log | grep -v Emailing | cut -d " " -f 2-  | grep -v '\[' | grep -v ': /dev/\.udev:' | grep -v ': /dev/\.initramfs:' > /tmp/rkhunter.log
+	LINES=$(wc -l /tmp/rkhunter.log)
+	if [  -ne 0 ] ; then
+		cat /tmp/rkhunter.log | mail -aFrom:myemailfrom@example.com -s "[rkhunter] Warnings/Errors found on $(cat /etc/hostname | head -n 1)" myemail@example.com
+	fi
+	rm /tmp/rkhunter.log
+fi
+
+# Update rkhunter database
+rkhunter --update > /dev/null 2>/dev/null
+
+chmod 640 /var/log/rkhunter.log

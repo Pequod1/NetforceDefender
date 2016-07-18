@@ -1,0 +1,13 @@
+relayhost = [smtp.office365.com]:587
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_generic_maps = hash:/etc/postfix/generic
+smtp_tls_security_level = may
+smtp_sasl_security_options = noanonymous
+
+# Enable debugging
+debug_peer_list=smtp.office365.com
+debug_peer_level=3
+
+# Only allow localhost
+inet_interfaces = 127.0.0.1

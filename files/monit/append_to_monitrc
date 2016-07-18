@@ -1,0 +1,9 @@
+
+# 2 empty lines are added because of the server automatically adding confidentiality notice
+set mail-format {
+ from: myemail@example.com
+ subject: [Customer name] monit alert -- $EVENT $SERVICE
+ message: Monit $ACTION $SERVICE at $DATE on $HOST
+
+
+}

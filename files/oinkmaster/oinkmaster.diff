@@ -1,0 +1,17 @@
+--- oinkmaster.ori	2015-02-23 15:57:03.686980462 -0700
++++ oinkmaster	2015-02-23 15:52:07.663700866 -0700
+@@ -919,12 +919,12 @@
+ 
+         if ($config{verbose}) {
+             print STDERR "\n";
+-            my @wget_cmd = ("wget", "-v", "-O", $localfile, $url, @user_agent_opt);
++            my @wget_cmd = ("wget", "--timeout", "150", "--tries", "3", "-v", "-O", $localfile, $url, @user_agent_opt);
+             clean_exit("could not download from $obfuscated_url")
+               if (system(@wget_cmd));
+ 
+         } else {
+-            my @wget_cmd = ("wget", "-v", "-o", $log, "-O", $localfile, $url, @user_agent_opt);
++            my @wget_cmd = ("wget", "--timeout", "150", "--tries", "3", "-v", "-o", $log, "-O", $localfile, $url, @user_agent_opt);
+             if (system(@wget_cmd)) {
+                 my $log_output;
+                 open(LOG, "<", "$log")

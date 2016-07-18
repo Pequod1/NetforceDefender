@@ -1,0 +1,68 @@
+# Alert when the rate of events exceeds a threshold
+
+# (Required)
+# Elasticsearch host
+es_host: 127.0.0.1
+
+# (Required)
+# Elasticsearch port
+es_port: 9200
+
+# (OptionaL) Connect with SSL to elasticsearch
+#use_ssl: True
+
+# (Optional) basic-auth username and password for elasticsearch
+#es_username: someusername
+#es_password: somepassword
+
+# (Required)
+# Rule name, must be unique
+name: Alert snort priority 1
+
+# (Required)
+# Type of alert.
+# the frequency rule type alerts when num_events events occur with timeframe time
+type: frequency
+
+# (Required)
+# Index to search, wildcard supported
+index: logstash-*
+
+# (Required, frequency specific)
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 1
+
+# (Required, frequency specific)
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+  hours: 1
+
+# (Required)
+# A list of elasticsearch filters used for find events
+# These filters are joined with AND and nested in a filtered query
+# For more info: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+filter:
+    - query:
+        query_string: {query: 'priority:1'}
+
+# (Required)
+# The alert is use when a match is found
+alert:
+- "command"
+
+# (required, email specific)
+# a list of email addresses to send alerts to
+#email:
+#- "myemail2@example.com"
+
+#from_addr: "myemail@example.com"
+#smtp_host: 127.0.0.1
+
+realert:
+  minutes: 59
+
+pipe_match_json: true
+command: ["CMD_GENERIC_ALERT"]
+
+# https://github.com/Yelp/elastalert/pull/338
+max_query_size: 10000
