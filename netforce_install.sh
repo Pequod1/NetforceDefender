@@ -1251,6 +1251,8 @@ function base_install {
 		exit 1
 	fi
 
+	# Workaround for #12
+	apt-mark hold ssh-import-id
 	# Install some useful tools
 	DEBIAN_FRONTEND=noninteractive apt-get install ethtool screen traceroute htop iotop sysstat tcpdump tshark bwm-ng fail2ban  openssh-server tofrodos -y
 
@@ -1644,10 +1646,6 @@ fi
 
 # Reinstall Molly-guard to prevent accidental reboot
 apt-get install molly-guard -y --allow-unauthenticated
-
-# Upgrade one last time then remove unneeded stuff.
-aptitude update && aptitude full-upgrade -y
-apt-get autoremove -y
 
 echo '--------------------- Installation Complete ---------------------'
 
