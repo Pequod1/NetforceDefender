@@ -657,7 +657,7 @@ function install_snort {
 	DEBIAN_FRONTEND=noninteractive apt-get install snort -y
 
 	# It used to be 'any', but changed due to using ET rules: Bug #15 in JSON logstash filter
-	sed -i 's|DEBIAN_SNORT_HOME_NET="192.168.0.0/16"|DEBIAN_SNORT_HOME_NET="10.0.0.0/8,172.16.0.0/12,192.168.0.0./16,100.64.0.0/10"|' /etc/snort/snort.debian.conf
+	sed -i 's|DEBIAN_SNORT_HOME_NET="192.168.0.0/16"|DEBIAN_SNORT_HOME_NET="10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10"|' /etc/snort/snort.debian.conf
 	# Default to current interface so that it starts
 	local SNORT_IFACES="$(route -n | grep -E ^0.0.0.0 | awk '{print $8}' | tr '\n' ' ' | sed 's/[ ]*$//')"
 	sed -i "s/DEBIAN_SNORT_INTERFACE=\"eth0\"/DEBIAN_SNORT_INTERFACE=\"${SNORT_IFACES}\"/" /etc/snort/snort.debian.conf
