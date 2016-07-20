@@ -614,7 +614,11 @@ if [ -f ${ND_LOG_FILE} ]; then
 	[ ${DEP_ISSUES} -eq 0 ] && DEP_ISSUES=$(grep 'will resolve these dependencies' ${ND_LOG_FILE} | wc -l)
 	if [ ${DEP_ISSUES} -gt 0 ]; then
 		echo "Package dependency issues (${DEP_ISSUES}). Look for 'is to be installed' or 'will resolve these dependencies' in ${ND_LOG_FILE}"
-	fi 
+	fi
+	HSM_ISSUES=$(grep -i 'Hash Sum mismatch' ${ND_LOG_FILE} | wc -l)
+	if [ ${HSM_ISSUES} -gt 0 ]; then
+		echo "Failed downloading packages (${HSM_ISSUES}). Look for 'Hash Sum mismatch' or 'will resolve these dependencies' in ${ND_LOG_FILE}"
+	fi
 fi
 
 echo "All checks done"
