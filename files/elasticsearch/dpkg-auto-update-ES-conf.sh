@@ -219,9 +219,9 @@
 #
 
 VERSION_STORAGE_FILE=/var/elasticsearch/CURRENT_VERSION
-CURRENT_LS_VERSION=$(dpkg -l elasticsearch | grep elasticsearch | awk '{print $3}')
+CURRENT_ES_VERSION=$(dpkg -l elasticsearch | grep elasticsearch | awk '{print $3}')
 
-if [ -z "${CURRENT_LS_VERSION}" ]; then
+if [ -z "${CURRENT_ES_VERSION}" ]; then
 	# ElasticSearch not present, not doing anything
 	exit 0
 fi
@@ -229,10 +229,10 @@ fi
 # Create directory
 [ ! -d $(dirname ${VERSION_STORAGE_FILE}) ] && mkdir -p $(dirname ${VERSION_STORAGE_FILE})
 # And file if it doesn't exist
-[ ! -f ${VERSION_STORAGE_FILE} ] && echo "${CURRENT_LS_VERSION}" > ${VERSION_STORAGE_FILE}
+[ ! -f ${VERSION_STORAGE_FILE} ] && echo "${CURRENT_ES_VERSION}" > ${VERSION_STORAGE_FILE}
 
 # Check if we have to update
-if [ "${CURRENT_LS_VERSION}" != "$(cat ${VERSION_STORAGE_FILE})" ]; then
+if [ "${CURRENT_ES_VERSION}" != "$(cat ${VERSION_STORAGE_FILE})" ]; then
 	# Check if configuration file needs updating
 
 	# Disable swapping in ElasticSearch (handle a few different cases)
