@@ -236,7 +236,7 @@ if [ "${CURRENT_ES_VERSION}" != "$(cat ${VERSION_STORAGE_FILE})" ]; then
 	# Check if configuration file needs updating
 
 	# Almost completely disable swapiness which is causing issues with ElasticSearch
-	if [ ! -f /etc/sysctl.d/11-swapiness.conf ];
+	if [ ! -f /etc/sysctl.d/11-swapiness.conf ]; then
 		echo 'vm.swappiness=1' > /etc/sysctl.d/11-swapiness.conf
 		echo '1' > /proc/sys/vm/swappiness
 	fi
