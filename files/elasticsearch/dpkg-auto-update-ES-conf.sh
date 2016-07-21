@@ -235,15 +235,18 @@ fi
 if [ "${CURRENT_ES_VERSION}" != "$(cat ${VERSION_STORAGE_FILE})" ]; then
 	# Check if configuration file needs updating
 
+	# Almost completely disable swapiness which is causing issues with ElasticSearch
+	if [ ! -f /etc/sysctl.d/11-swapiness.conf ];
+		echo 'vm.swappiness=1' > /etc/sysctl.d/11-swapiness.conf
+		echo '1' > /proc/sys/vm/swappiness
+	fi
+
 	# Disable swapping in ElasticSearch (handle a few different cases)
 	sed -i 's/# bootstrap.mlockall: true/bootstrap.mlockall: true/' /etc/elasticsearch/elasticsearch.yml
 	sed -i 's/#bootstrap.mlockall: true/bootstrap.mlockall: true/' /etc/elasticsearch/elasticsearch.yml
 
 	# Update memory
 	UPDATE_ES_MEM_SCRIPT norestart
-
-	# Almost completely disable swapiness which is causing issues with ElasticSearch
-	[ ! -f /etc/sysctl.d/11-swapiness.conf ] && echo 'vm.swappiness=1' > /etc/sysctl.d/11-swapiness.conf
 
 	dpkg -l elasticsearch | grep elasticsearch | awk '{print $3}' > ${VERSION_STORAGE_FILE}
 fi
