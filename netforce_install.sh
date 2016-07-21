@@ -1506,7 +1506,7 @@ do
 			shift
 			;;
 		*)
-			echo 'Unkown option (${key}), aborting'
+			echo "Unkown option (${key}), aborting"
 			exit 1
 			;;
 	esac
