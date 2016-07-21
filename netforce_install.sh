@@ -909,7 +909,6 @@ function install_curator {
 function configure_monit {
 	local MONIT_CONF_DIR=/etc/monit/conf.d
 	echo "[*] Configuring monit"
-	apt-get install screen -y
 	sed -i 's/# set mailserver mail.bar.baz,/  set mailserver localhost/' /etc/monit/monitrc
 	sed -i 's/# set alert sysadm@foo.bar/ set alert myemail@example.com/' /etc/monit/monitrc
 	sed -i 's/#   with start delay 240/   with start delay 240/' /etc/monit/monitrc
@@ -964,7 +963,7 @@ function create_alert_schema_mysql {
 
 function create_EA_alert_rules {
 	echo '[*] Install ElastAlert rules'
-	apt-get install screen python-dev mailutils -y
+	apt-get install python-dev mailutils -y
 	# See https://elastalert.readthedocs.org/en/latest/ruletypes.html for more details.
 	# Seel also https://elastalert.readthedocs.org/en/latest/recipes/writing_filters.html#writingfilters
 	local RULES_DIR=$1
