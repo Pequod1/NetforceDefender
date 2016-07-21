@@ -916,7 +916,7 @@ function configure_monit {
 
 	fromdos ${INSTALL_FILES_DIR}/monit/append_to_monitrc
 	cat ${INSTALL_FILES_DIR}/monit/append_to_monitrc >> /etc/monit/monitrc
-	sed -i "s/myemail@example.com/${ALERT_EMAIL}/" /etc/monit/monitrc
+	sed -i "s/myemail@example.com/${ALERT_EMAIL}/g" /etc/monit/monitrc
 	mv ${INSTALL_FILES_DIR}/monit/conf.d/* ${MONIT_CONF_DIR}
 	# Add alert in case the system needs reboot if FDE is present
 	[ ${IS_FDE} -eq 0 ] && rm ${MONIT_CONF_DIR}/reboot-required.conf
