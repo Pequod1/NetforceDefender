@@ -1252,6 +1252,8 @@ function base_install {
 	fi
 
 	# Workaround for #12
+	apt-get purge ssh-import-id -y
+	apt-get autoremove -y
 	apt-mark hold ssh-import-id
 	# Install some useful tools
 	DEBIAN_FRONTEND=noninteractive apt-get install ethtool screen traceroute htop iotop sysstat tcpdump tshark bwm-ng fail2ban  openssh-server tofrodos -y
