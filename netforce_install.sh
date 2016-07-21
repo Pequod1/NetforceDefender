@@ -921,7 +921,7 @@ function configure_monit {
 	[ ${IS_FDE} -eq 0 ] && rm ${MONIT_CONF_DIR}/reboot-required.conf
 	fromdos ${MONIT_CONF_DIR}/*
 
-	# Don't start monit in service, make it wait a little while so we can make sure all services are started
+	# Only start monit if customer name is set
 	systemctl daemon-reload
 	systemctl disable monit.service
 	[ -z "$(grep -E '^exit 0' /etc/rc.local)" ] && echo 'exit 0' >> /etc/rc.local # Ubuntu 16.04 is lacking the exit 0 at the end of /etc/rc.local
