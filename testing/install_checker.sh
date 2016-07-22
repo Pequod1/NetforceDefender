@@ -414,6 +414,10 @@ if [ ${IS_ND} -eq 1 ]; then
 	check_package_exist_test snort
 fi
 
+OPENJDK_VERSION=8
+OPENJDK_PACKAGE=openjdk-${OPENJDK_VERSION}-jre
+check_package_exist_test ${OPENJDK_PACKAGE}
+
 ############################# CHECK RUNNING PROCESSES ###############################
 
 echo '[*] Checking running processes'
