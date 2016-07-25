@@ -1362,6 +1362,7 @@ function add_generic_alert_elastalert {
 }
 
 function install_vm_tools {
+	# http://www.dmo.ca/blog/detecting-virtualization-on-linux/
 	if [ -n "$(lspci | grep VMware)" ] || [ -n "$(lspci | grep 'Hyper-V')" ]; then
 		[ -n "$(lspci | grep VMware)" ] && echo "VMware detected, installing Open VM Tools"
 		[ -n "$(lspci | grep 'Hyper-V')" ] && echo "Hyper-V detected, installing Open VM Tools"
