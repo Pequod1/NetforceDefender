@@ -1361,6 +1361,17 @@ function add_generic_alert_elastalert {
 	fromdos ${RULE_GENERIC_LOG_ALERT}
 }
 
+function install_vm_tools {
+	if [ -n "$(lspci | grep VMware)" ] || [ -n "$(lspci | grep 'Hyper-V')" ]; then
+		[ -n "$(lspci | grep VMware)" ] && echo "VMware detected, installing Open VM Tools"
+		[ -n "$(lspci | grep 'Hyper-V')" ] && echo "Hyper-V detected, installing Open VM Tools"
+		apt-get install open-vm-tools -y
+	fi
+	if [ -n "$(lspci | grep -i VirtualBox)" ]; then
+		apt-get install virtualbox-guest-dkms -y
+	fi
+}
+
 ###############################################    FUNCTIONS - End  ###############################################
 
 if [ $(lsb_release -i -s | grep -i ubuntu | wc -l) -eq 0 ]; then
@@ -1627,14 +1638,7 @@ configure_logstash
 
 add_generic_alert_elastalert
 
-if [ -n "$(lspci | grep VMware)" ] || [ -n "$(lspci | grep 'Hyper-V')" ]; then
-	[ -n "$(lspci | grep VMware)" ] && echo "VMware detected, installing Open VM Tools"
-	[ -n "$(lspci | grep 'Hyper-V')" ] && echo "Hyper-V detected, installing Open VM Tools"
-	apt-get install open-vm-tools -y
-fi
-if [ -n "$(lspci | grep -i VirtualBox)" ]; then
-	apt-get install virtualbox-guest-dkms -y
-fi
+install_vm_tools
 
 store_version_installed
 
