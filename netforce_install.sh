@@ -1628,8 +1628,8 @@ configure_logstash
 add_generic_alert_elastalert
 
 if [ -n "$(lspci | grep VMware)" ] || [ -n "$(lspci | grep 'Hyper-V')" ]; then
-	[ -n "$(lspci | grep VMware)" ] && echo "VMware detected, install Open VM Tools"
-	[ -n "$(lspci | grep 'Hyper-V')" ] && echo "Hyper-V detected, install Open VM Tools"
+	[ -n "$(lspci | grep VMware)" ] && echo "VMware detected, installing Open VM Tools"
+	[ -n "$(lspci | grep 'Hyper-V')" ] && echo "Hyper-V detected, installing Open VM Tools"
 	apt-get install open-vm-tools -y
 fi
 if [ -n "$(lspci | grep -i VirtualBox)" ]; then
