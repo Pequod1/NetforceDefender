@@ -11,6 +11,7 @@ server {
 		sub_filter 'href="/' 'href="/openvas/';
 		sub_filter 'src="/' 'src="/openvas/';
 		sub_filter 'action="/' 'action="/openvas/';
+		sub_filter 'src=\\"/' 'src=\\"/openvas/';
 		sub_filter 'content="30;/omp' 'content="30;/openvas/omp';
 		sub_filter_once off;
 	}
