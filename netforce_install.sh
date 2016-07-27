@@ -668,6 +668,11 @@ function install_snort {
 	apt-get -f install -y
 }
 
+function install_ntopng {
+	echo '[*] Installing Ntop-ng'
+	apt-get install ntopng -y
+}
+
 function install_nginx {
 	echo '[*] Installing Nginx'
 	apt-get install nginx -y
@@ -1289,6 +1294,7 @@ function base_install {
 	install_monit
 
 	install_openvas
+	install_ntopng
 
 	add_iptables
 
