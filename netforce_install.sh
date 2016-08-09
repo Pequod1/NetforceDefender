@@ -1027,7 +1027,7 @@ function install_elastalert {
 	local EA_BASEDIR=/etc/elastalert
 	local RULES_DIR=${EA_BASEDIR}/rules
 	local CONFIG_FILE="${EA_BASEDIR}/config.yaml"
-	local EA_VERSION="0.0.94"
+	local EA_VERSION="0.0.95"
 
 	# Install elastalert
 	# Note: It doesn't work yet with python3 - see #145
