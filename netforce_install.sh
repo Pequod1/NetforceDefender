@@ -708,7 +708,7 @@ function install_nginx {
 	# Generate SSL Cert
 	local CERT_GEN_SCRIPT=/etc/scripts/generate_certificate.sh
 	mkdir -p $(dirname ${CERT_GEN_SCRIPT})
-	cp ${INSTALL_FILES_DIR}/nginx/generate_certificate.sh ${CERT_GEN_SCRIPT}
+	mv ${INSTALL_FILES_DIR}/nginx/generate_certificate.sh ${CERT_GEN_SCRIPT}
 	fromdos ${CERT_GEN_SCRIPT}
 	if [ -n "${CERT_SUBJECT_LINE}" ]; then
 		sed -i "s|/C=US/ST=YourState/L=YourCity/O=YourOrganization/CN=Netforce/emailAddress=myemail@example.com|${CERT_SUBJECT_LINE}|" ${CERT_GEN_SCRIPT}
