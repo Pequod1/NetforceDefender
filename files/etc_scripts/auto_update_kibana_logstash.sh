@@ -246,6 +246,7 @@ function kibana_update_configuration {
 	local KIBANA_LOG_FILE=/var/log/kibana.log
 	sed -i 's/# server.host: "0.0.0.0"/server.host: "127.0.0.1"/' /opt/kibana/config/kibana.yml
 	sed -i "s,# logging.dest: stdout,logging.dest: ${KIBANA_LOG_FILE}," /opt/kibana/config/kibana.yml
+	sed -i 's,# server.basePath: "",server.basePath: "/kibana",' /opt/kibana/config/kibana.yml
 	touch ${KIBANA_LOG_FILE}
 	chown kibana.kibana ${KIBANA_LOG_FILE}
 }

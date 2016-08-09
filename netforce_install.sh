@@ -673,6 +673,20 @@ function install_ntopng {
 	apt-get install ntopng -y
 }
 
+function install_landing_page {
+	echo '[*] Installing Landing page'
+	local LP_LOCATION=/var/www/html
+	
+	# Cleanup existing files in www directory
+	rm -f ${LP_LOCATION}/*
+
+	# Copy landing page
+	fromdos ${INSTALL_FILES_DIR}/landing_page/*
+	chown -R www-data.www-data ${INSTALL_FILES_DIR}/landing_page/
+	chmod -R 400 ${INSTALL_FILES_DIR}/landing_page/
+	mv ${INSTALL_FILES_DIR}/landing_page/* ${LP_LOCATION}
+}
+
 function install_nginx {
 	echo '[*] Installing Nginx'
 	apt-get install nginx -y
@@ -1295,6 +1309,8 @@ function base_install {
 
 	install_openvas
 	install_ntopng
+
+	install_landing_page
 
 	add_iptables
 

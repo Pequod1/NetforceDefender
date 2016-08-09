@@ -479,6 +479,14 @@ file_exist_test /etc/nginx/ssl/server.key
 file_exist_test /etc/nginx/sites-enabled/server
 file_exist_test /etc/nginx/.htpasswd
 
+# Landing page
+VAR_WWW=/var/www/html
+file_exist_test ${VAR_WWW}/index.html
+file_exist_test ${VAR_WWW}/kapp.html
+file_exist_test ${VAR_WWW}/ntop-ng.html
+file_exist_test ${VAR_WWW}/openvas.html
+file_exist_test ${VAR_WWW}/style.css
+
 # Check Snort stuff
 if [ ${IS_ND} -eq 1 ]; then
 	SNORT_RULES_PATH=/etc/snort/rules
