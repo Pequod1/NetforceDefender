@@ -458,7 +458,7 @@ def web_internal_adduser(user, password):
 	salt = os.urandom(4)
 	h = hashlib.sha1(password)
 	h.update(salt)
-	pwhash = base64.urlsafe_b64encode(h.digest() + salt)
+	pwhash = base64.encodestring(h.digest() + salt).rstrip()
 
 	entries.append([user, "{SSHA}" + pwhash])
 
