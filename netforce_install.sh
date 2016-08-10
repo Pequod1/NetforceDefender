@@ -387,9 +387,9 @@ function install_custom_shell {
 	chmod 755 ${CUSTOM_SHELL_CLIENT_PATH}
 
 	mv ${INSTALL_FILES_DIR}/shell/shell-webserver.py ${CUSTOM_SHELL_SERVER_PATH}
+	fromdos ${CUSTOM_SHELL_SERVER_PATH}
 	chown root.root ${CUSTOM_SHELL_SERVER_PATH}
 	chmod 750 ${CUSTOM_SHELL_SERVER_PATH}
-	fromdos ${CUSTOM_SHELL_SERVER_PATH}
 
 	# Make it run as a daemon
 	local SERVICE_FILE=${SYSTEMD_BASE_DIR}/NetforceShell.service
@@ -616,9 +616,9 @@ function configure_logstash {
 	mv ${INSTALL_FILES_DIR}/logstash/*.yaml $(dirname ${LS_CONF_DIR})
 
 	# Make sure permission and file format is OK
-	chown -R logstash.logstash $(dirname ${LS_CONF_DIR})
 	fromdos ${LS_CONF_DIR}/*
 	fromdos $(dirname ${LS_CONF_DIR})/*.yaml
+	chown -R logstash.logstash $(dirname ${LS_CONF_DIR})
 }
 
 function install_logstash {
