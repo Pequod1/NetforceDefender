@@ -1681,5 +1681,5 @@ apt-get install molly-guard -y --allow-unauthenticated
 echo '--------------------- Installation Complete ---------------------'
 
 rm ${THIS_FILE}
-rm -rf "${INSTALL_FILES_DIR}" "$(dirname ${THIS_FILE})/LICENSE" "$(dirname ${THIS_FILE})/README.md" "$(dirname ${THIS_FILE})/.gitignore" "$(dirname ${THIS_FILE})/login_prompt.png"
+rm -rf "${INSTALL_FILES_DIR}" "$(dirname ${THIS_FILE})/LICENSE" "$(dirname ${THIS_FILE})/README.md" "$(dirname ${THIS_FILE})/.gitignore" "$(dirname ${THIS_FILE})/screenshots"
 reboot
