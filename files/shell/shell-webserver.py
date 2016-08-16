@@ -758,7 +758,7 @@ def customer_info_internal_write_ci(ci):
 
 		f.write("filter {\n")
 		f.write("\tmutate {\n")
-		f.write("\t\tadd_field {\n")
+		f.write("\t\tadd_field => {\n")
 
 		f.write('\t\t\t"[customer][name]" => "' + ci.name + '"\n')
 		f.write('\t\t\t"[customer][location]" => "' + ci.location + '"\n')
