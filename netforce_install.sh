@@ -669,6 +669,18 @@ function install_snort {
 
 function install_ntopng {
 	echo '[*] Installing Ntop-ng'
+
+	# The one from the repo doesn't work, probably due to conflict with openvas (using redis)
+	# And the updated from the ntop repo work
+	# Note: Web interface shows a 10 minute license for Pro Small Business Edition but then switches to the community afterward
+	# http://packages.ntop.org/apt-stable/
+	wget http://apt-stable.ntop.org/12.04/all/apt-ntop-stable.deb
+	dpkg -i apt-ntop-stable.deb
+
+	# Add to auto-update
+	sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"ntop:";/' /etc/apt/apt.conf.d/50unattended-upgrades
+
+	apt-get update
 	apt-get install ntopng -y
 }
 
