@@ -682,6 +682,7 @@ function install_ntopng {
 
 	apt-get update
 	apt-get install ntopng -y
+	aptitude full-upgrade -y
 }
 
 function install_landing_page {
