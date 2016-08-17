@@ -1178,28 +1178,6 @@ function base_install {
 			DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 		fi
 
-		# Rename network interfaces to ethX due to snort package issue (there might be a comment later in this script about it)
-		if [ -n "$(ifconfig -a | grep 'encap:Ethernet' | grep -v '^eth[0-9]')" ]; then
-			echo "Renaming network interfaces to ethX"
-			apt-get install biosdevname -y
-
-			NEED_REBOOT=1
-
-			GRUB_CMDLINE_LINUX_DEFAULT=$(grep 'GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub | grep -Po '".*?"' | tail -c +2 | head -c -2)
-			grep -v 'GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub > /etc/default/grub.tmp
-			mv /etc/default/grub.tmp /etc/default/grub
-			APPEND_TEXT="net.ifnames=0"
-			if [ -n "${GRUB_CMDLINE_LINUX_DEFAULT}" ]; then
-				echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${GRUB_CMDLINE_LINUX_DEFAULT} ${APPEND_TEXT}\"" >> /etc/default/grub
-			else
-				echo "GRUB_CMDLINE_LINUX_DEFAULT=\"${APPEND_TEXT}\"" >> /etc/default/grub
-			fi
-			update-grub
-
-			# Now save which interface have which mac
-			ifconfig -a | grep -E 'Link encap:Ethernet' | awk '{ print $1 "=\"" $5 "\"" }' > .mac
-		fi
-
 		# ... and after. If the number is different, we might want to update
 		if [ -f /var/run/reboot-required ] || [ ${AMOUNT_KERNELS} -ne $(ls /boot/vmlinuz-* | wc -l) ] || [ ${NEED_REBOOT} -gt 0 ]; then
 			cd ${CURRENT_DIR}
@@ -1229,27 +1207,6 @@ function base_install {
 			reboot
 			exit 0
 		fi
-	fi
-
-	if [ -f .mac ]; then
-		for iface in $(ifconfig -a | grep -E 'Link encap:Ethernet' | awk '{ print $1}')
-		do
-			MAC=$(ifconfig ${iface} | grep -E 'Link encap:Ethernet' | awk '{ print $5}')
-			OLD_IFACE=$(grep "${MAC}" .mac | awk -F= '{print $1}')
-			if [ -z ${OLD_IFACE} ]; then
-				echo "Mac might have changed. No old interface with MAC ${MAC}. Check out mac.old"
-				cp .mac mac.old
-				continue
-			fi
-			echo "Updating network settings for ${iface} (old: ${OLD_IFACE})"
-			# Edit /etc/network/interfaces
-			sed -i "s/^iface ${OLD_IFACE} inet /iface ${iface} inet /" /etc/network/interfaces
-			sed -i "s/^auto ${OLD_IFACE}/auto ${iface}/" /etc/network/interfaces
-		done
-		rm .mac
-		echo "Done ... rebooting"
-		reboot
-		exit 0
 	fi
 
 	rm .updated
