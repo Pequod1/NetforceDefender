@@ -1190,9 +1190,9 @@ function base_install {
 				if [ ${ND_INSTALL} -eq 1 ]; then
 					CRONJOB_PARAMS="${CRONJOB_PARAMS} --install defender"
 				elif [ ${LOG_INSTALL} -eq 1 ]; then
-					CRONJOB_PARAMS="${CRONJOB_PARAMS} --installer logger"
+					CRONJOB_PARAMS="${CRONJOB_PARAMS} --install logger"
 				else
-					CRONJOB_PARAMS="${CRONJOB_PARAMS} --installer base"
+					CRONJOB_PARAMS="${CRONJOB_PARAMS} --install base"
 				fi
 				[ ${SKIP_OPENVAS_UPDATE} -eq 1 ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --openvas-update No"
 				[ -n "${EMAIL_PROVIDER}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-provider ${EMAIL_PROVIDER}"
