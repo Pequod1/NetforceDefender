@@ -1103,7 +1103,7 @@ function install_openvas {
 	[ -z "$(grep openvas /etc/apt/apt.conf.d/50unattended-upgrades)" ] && sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"LP-PPA-mrazavi-openvas:xenial";/' /etc/apt/apt.conf.d/50unattended-upgrades
 
 	echo "openvas-scanner openvas-scanner/enable_redis select true" | debconf-set-selections
-	DEBIAN_FRONTEND=noninteractive apt-get install openvas -y
+	DEBIAN_FRONTEND=noninteractive apt-get install openvas -y --allow-unauthenticated
 
 	# Prevent GSA from listening to all (and on 80+443 which would prevent Kibana from working)
 	local GSA_DEFAULTS_FILENAME=$(grep 'DESC=' /etc/init.d/openvas-gsa | awk -F\" '{print $2}')
