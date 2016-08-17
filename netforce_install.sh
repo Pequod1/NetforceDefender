@@ -1238,7 +1238,7 @@ function base_install {
 	fi
 
 	# Workaround for #12
-	apt-get purge ssh-import-id -y
+	apt-get purge ssh-import-id python3-requests -y
 	apt-get autoremove -y
 	apt-mark hold ssh-import-id
 	# Install some useful tools
