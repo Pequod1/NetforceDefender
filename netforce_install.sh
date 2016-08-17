@@ -668,7 +668,7 @@ function install_snort {
 }
 
 function install_ntopng {
-	echo '[*] Installing Ntop-ng'
+	echo '[*] Installing Ntopng'
 
 	# The one from the repo doesn't work, probably due to conflict with openvas (using redis)
 	# And the updated from the ntop repo work
