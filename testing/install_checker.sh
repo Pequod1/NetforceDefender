@@ -483,7 +483,7 @@ file_exist_test /etc/nginx/.htpasswd
 VAR_WWW=/var/www/html
 file_exist_test ${VAR_WWW}/index.html
 file_exist_test ${VAR_WWW}/kapp.html
-file_exist_test ${VAR_WWW}/ntop-ng.html
+file_exist_test ${VAR_WWW}/ntopng.html
 file_exist_test ${VAR_WWW}/openvas.html
 file_exist_test ${VAR_WWW}/style.css
 
