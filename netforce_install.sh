@@ -880,9 +880,9 @@ function disable_power_button {
 }
 
 function cleanup_install_path {
-	is_package_installed realpath
-	[ $? -eq 0 ] && apt-get install realpath -y
-	is_package_installed realpath
+	is_package_installed coreutils
+	[ $? -eq 0 ] && apt-get install coreutils -y
+	is_package_installed coreutils
 	if [ $? -eq 0 ]; then
 		echo "Failed installing realpath, aborting."
 		exit 1
