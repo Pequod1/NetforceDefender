@@ -983,7 +983,7 @@ def network_internal_get_interface_list():
 	iface_list = os.listdir('/sys/class/net/')
 	iface_list.remove('lo')
 	for iface in iface_list:
-		if iface.startswith('dummy'):
+		if iface.startswith('dummy') or iface.startswith('tun') or iface.startswith('tap'):
 			iface_list.remove(iface)
 	return iface_list
 
