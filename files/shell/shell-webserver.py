@@ -982,6 +982,9 @@ def network_internal_is_interface_valid(interface):
 def network_internal_get_interface_list():
 	iface_list = os.listdir('/sys/class/net/')
 	iface_list.remove('lo')
+	for iface in iface_list:
+		if iface.startswith('dummy'):
+			iface_list.remove(iface)
 	return iface_list
 
 def network_internal_get_interface(interface):
