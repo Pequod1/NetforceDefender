@@ -249,6 +249,7 @@ if [ ${IFACE} = "lo" ]; then
 	[ -z "$(/sbin/iptables-save | grep epmd)" ] && iptables -A INPUT ! -i lo -p tcp --dport epmd -m comment --comment "epmd" -j DROP
 	[ -z "$(/sbin/iptables-save | grep elasticsearch)" ] && iptables -A INPUT ! -i lo -p tcp -m multiport --dports 9200,9300 -m comment --comment "elasticsearch" -j DROP
 	[ -z "$(/sbin/iptables-save | grep ntop)" ] && iptables -A INPUT ! -i lo -p tcp --dport 3000 -m comment --comment "ntop" -j DROP
+	[ -z "$(/sbin/iptables-save | grep openvas)" ] && iptables -A INPUT ! -i lo -p tcp --dport 9391 -m comment --comment "openvas" -j DROP
 fi
 
 # If aruba is in the list, reroute the port.
