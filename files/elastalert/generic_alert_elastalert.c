@@ -221,7 +221,7 @@
 
 int log_it(const char * str, const char * buffer, const char * failure_message);
 
-// apt-get install libjansson-dev zlib1g-dev -y
+// apt-get install libjansson-dev zlib1g-dev libmysqld-dev -y
 // gcc $(mysql_config --cflags) -DMAIL_CMD=\"${MAIL_CMD}\" -DDEFAULT_LOG_REALERT_TIME=${LOG_REALERT_TIME} -DCONF_PATH=\"${GENERIC_ALERTS_CONF_PATH}\" -DMYSQL_ALERT_LEN=${MYSQL_ALERT_LEN} -Wall -fvisibility=hidden -O3 -s -o ${CMD_GENERIC_ALERT} ${CMD_GENERIC_ALERT}.c $(mysql_config --libs) -ljansson -lm
 /*
 [{
