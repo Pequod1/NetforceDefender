@@ -680,6 +680,9 @@ function install_ntopng {
 	# Add to auto-update
 	sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"ntop:";/' /etc/apt/apt.conf.d/50unattended-upgrades
 
+	# Start in community edition
+	sed -i 's/ntopng.pid/ntopng.pid --community/' /etc/ntopng/ntopng.conf
+
 	apt-get update
 	apt-get install ntopng -y
 	aptitude full-upgrade -y
