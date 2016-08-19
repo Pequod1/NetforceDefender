@@ -1020,7 +1020,7 @@ function create_EA_alert_rules {
 	# Create parameters files for generic alert.
 	local GENERIC_ALERTS_CONF_PATH=/etc/generic_alert.conf
 	echo "LOGFILE=/var/log/alerts" >> ${GENERIC_ALERTS_CONF_PATH}
-	echo "EMAIL_FROM=${ALERT_EMAIL}" >> ${GENERIC_ALERTS_CONF_PATH}
+	echo "EMAIL_FROM=${FROM_EMAIL}" >> ${GENERIC_ALERTS_CONF_PATH}
 	echo "LOGIN=root" >> ${GENERIC_ALERTS_CONF_PATH}
 	echo "PASSWORD=${MYSQL_PASSWORD}" >> ${GENERIC_ALERTS_CONF_PATH}
 	echo "DB=${MYSQL_DB_NAME}" >> ${GENERIC_ALERTS_CONF_PATH}
