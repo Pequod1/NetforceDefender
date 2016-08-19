@@ -1371,7 +1371,7 @@ def network_do_whois(token, domain):
 
 ################## System
 
-ITEMS_WITH_STATUS = [ 'logstash', 'elasticsearch', 'kibana', 'snort', 'elastalert', 'quagga', 'mysql', 'monit', 'rabbitmq', 'nginx', 'ntp', 'ntpd', 'openvpn', 'openvas-manager', 'openvas-scanner', 'openvas-gsa', 'redis' ]
+ITEMS_WITH_STATUS = [ 'logstash', 'elasticsearch', 'kibana', 'snort', 'elastalert', 'quagga', 'mysql', 'monit', 'rabbitmq', 'nginx', 'ntp', 'ntpd', 'openvpn', 'openvas-manager', 'openvas-scanner', 'openvas-gsa', 'redis', 'ntopng' ]
 OPENVPN_PID_DIR = '/run/openvpn'
 
 def system_internal_read_file_get_pid(filename):
@@ -1408,6 +1408,7 @@ def system_internal_is_prog_in_pid(pids, program):
 def system_internal_get_all_statuses():
 	pids = [int(pid) for pid in os.listdir('/proc') if pid.isdigit()]
 	items = {}
+	items['ntopng'] = system_internal_read_file_get_pid('/var/run/ntopng.pid') in pids
 	items['ElasticSearch'] = system_internal_read_file_get_pid('/var/run/elasticsearch/elasticsearch.pid') in pids
 	items['Logstash'] = system_internal_read_file_get_pid('/var/run/logstash.pid') in pids
 	items['MySQL'] = system_internal_read_file_get_pid('/var/run/mysqld/mysqld.pid') in pids
