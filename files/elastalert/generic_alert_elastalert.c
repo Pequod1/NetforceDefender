@@ -915,19 +915,27 @@ int log_it(const char * str, const char * buffer, const char * failure_message)
 {
 	time_t rawtime;
 	int ret;
+	char * time_str;
 	FILE * f = fopen(_log_filename, "a");
 
 	if (f == NULL || str == NULL || strlen(str) == 0) return 1;
 
 	rawtime = time(NULL);
+	time_str = (char *)calloc(1, strlen(ctime(&rawtime)) + 1);
+	strcpy(time_str, ctime(&rawtime));
+	// Remove newline at the end
+	time_str[strlen(time_str) - 1] = '\0';
 
 	if (buffer != NULL && strlen(buffer) > 0) {
-		ret = fprintf(f, "%s - Alerting - %s - Buffer (length: %ld): %s%s", ctime(&rawtime), str,
+		ret = fprintf(f, "%s - Alerting - %s - Buffer (length: %ld): %s%s", time_str, str,
 			(buffer == NULL) ? 0 : strlen(buffer),
 			buffer, (buffer[strlen(buffer) -1 ] == '\n') ? "" : "\n");
 	} else {
-		ret = fprintf(f, "%s - Alerting - %s%s", ctime(&rawtime), str, (str[strlen(str) -1 ] == '\n') ? "" : "\n");
+		ret = fprintf(f, "%s - Alerting - %s%s", time_str, str, (str[strlen(str) -1 ] == '\n') ? "" : "\n");
 	}
+	
+	free(time_str);
+
 	if (ret <= 0) {
 		if (failure_message != NULL) printf("%s\n", failure_message);
 		return 1;
