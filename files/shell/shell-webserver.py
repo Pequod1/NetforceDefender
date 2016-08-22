@@ -1421,7 +1421,7 @@ def system_internal_get_all_statuses():
 	items['Kibana'] = system_internal_is_prog_in_pid(pids, "kibana")
 	items['Elastalert'] = system_internal_is_prog_in_pid(pids, "elastalert.elastalert")
 
-	# Logger: Quagga not installed
+	# If using Logger or no interface is configured, don't check for snort
 	if not system_internal_check_for("Netforce Logger"):
 		for interface in network_internal_get_interface_list():
 			if network_internal_get_interface(interface) == 'IDS':
