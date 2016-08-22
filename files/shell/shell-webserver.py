@@ -1371,7 +1371,7 @@ def network_do_whois(token, domain):
 
 ################## System
 
-ITEMS_WITH_STATUS = [ 'logstash', 'elasticsearch', 'kibana', 'snort', 'elastalert', 'quagga', 'mysql', 'monit', 'rabbitmq', 'nginx', 'ntp', 'ntpd', 'openvpn', 'openvas-manager', 'openvas-scanner', 'openvas-gsa', 'redis', 'ntopng' ]
+ITEMS_WITH_STATUS = [ 'logstash', 'elasticsearch', 'kibana', 'snort', 'elastalert', 'mysql', 'monit', 'nginx', 'ntp', 'ntpd', 'openvpn', 'openvas-manager', 'openvas-scanner', 'openvas-gsa', 'redis', 'ntopng' ]
 OPENVPN_PID_DIR = '/run/openvpn'
 
 def system_internal_read_file_get_pid(filename):
