@@ -436,6 +436,7 @@ check_process_exist_test openvassd
 check_process_exist_test openvasmd
 check_user_process_exist_test redis
 check_process_exist_test mysql
+check_process_exist_test ntopng
 
 [ ${IS_ND} -eq 1 ] && check_process_exist_test snort
 
