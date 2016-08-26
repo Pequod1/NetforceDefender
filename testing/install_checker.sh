@@ -406,6 +406,7 @@ check_package_exist_test ntp
 check_package_exist_test mysql-server
 check_package_exist_test fail2ban
 check_package_exist_test openvas
+check_package_exist_test ntopng
 
 [ -n "$(lspci | grep VMware)" ] && check_package_exist_test open-vm-tools -y
 
