@@ -624,7 +624,7 @@ if [ -f ${ND_LOG_FILE} ]; then
 	if [ ${SED_ISSUES} -gt 0 ]; then
 		echo "Issues (${SED_ISSUES}) with sed commands. Look for 'sed:' at the beginning of the line in ${ND_LOG_FILE}"
 	fi
-	DEP_ISSUES=$(grep 'is to be installed' ${ND_LOG_FILE} | wc -l)
+	DEP_ISSUES=$(grep 'is to be installed' ${ND_LOG_FILE} | grep -v 'Something extra is to be installed' | wc -l)
 	[ ${DEP_ISSUES} -eq 0 ] && DEP_ISSUES=$(grep 'will resolve these dependencies' ${ND_LOG_FILE} | wc -l)
 	if [ ${DEP_ISSUES} -gt 0 ]; then
 		echo "Package dependency issues (${DEP_ISSUES}). Look for 'is to be installed' or 'will resolve these dependencies' in ${ND_LOG_FILE}"
