@@ -684,7 +684,9 @@ function install_ntopng {
 	apt-get install ntopng -y
 	aptitude full-upgrade -y
 
-	# Start in community edition
+	# Start in community edition (Config file gets created when starting it)
+	service ntopng start
+	service ntopng stop
 	sed -i 's/ntopng.pid/ntopng.pid --community/' /etc/ntopng/ntopng.conf
 }
 
