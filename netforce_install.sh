@@ -565,7 +565,7 @@ LS_KIBANA_AUTO_UPDATE_SCRIPT=/etc/scripts/auto_update_kibana_logstash.sh
 function install_kibana {
 	# Current version: grep '>Kibana 4' kibana | head -n 1 | awk '{print $2}' | awk -F\< '{print $1}'
 	# Installed version: grep 'Kibana 4' /opt/kibana/README.txt | head -n 1 | awk '{print $2}' | awk -F\< '{print $1}'
-	local KIBANA_VERSION=4.5
+	local KIBANA_VERSION=4.6
 	echo "[*] Install Kibana"
 	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
 	if [ -z "$(grep '/kibana' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
@@ -627,7 +627,7 @@ function install_logstash {
 	echo "[*] Installing logstash"
 	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
 	if [ -z "$(grep '/logstash' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
-		echo 'deb http://packages.elastic.co/logstash/2.3/debian stable main' >> /etc/apt/sources.list.d/elastic.list
+		echo 'deb http://packages.elastic.co/logstash/2.4/debian stable main' >> /etc/apt/sources.list.d/elastic.list
 		apt-get update
 		## Add it to auto-update
 		#sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"Logstash:stable";/' /etc/apt/apt.conf.d/50unattended-upgrades
