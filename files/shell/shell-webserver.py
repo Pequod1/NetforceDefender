@@ -395,7 +395,7 @@ def login(user, password):
 
 	# Crypto type
 	ctype = hash_split[1]
-	
+
 	# Check algorithm
 	if ctype == '1' or ctype == '2a' or ctype == '5' or ctype == '6':
 		# MD5/Blowfish/SHA256/SHA512
@@ -436,7 +436,7 @@ def web_internal_read_htaccess(ignore_user):
 			if line and not line.startswith('#'):
 				username, pwhash = line.split(':')
 				if ignore_user == None or ignore_user != username:
-					entries.append( [username, pwhash.rstrip()])	
+					entries.append( [username, pwhash.rstrip()])
 	return entries
 
 def web_internal_write_htaccess(entries):
@@ -1088,7 +1088,7 @@ def network_internal_update_snort_interfaces():
 				iface_list.append(interface)
 		new_ifaces = ' '.join(iface_list)
 
-		# Check 
+		# Check
 		snort_debian_content = []
 		with open(SNORT_DEBIAN_CONFIG) as f:
 			for line in f:
@@ -1165,7 +1165,7 @@ def network_internal_update_daq_snort():
 	write_back_to_file = False
 	lines = [line.rstrip('\n') for line in open(SNORT_DEFAULT_FILE)]
 	contains_daq_params = (len([s for s in lines if 'PARAMS="--daq afpacket ' in s]) == 1)
-	
+
 	# If all IDS interfaces have LRO and GRO be turned off, then we can use DAQ in snort, thus using afpacket which saves CPU
 	if network_internal_lro_gro_off_for_all():
 		# Update /etc/default/snort and add '--daq afpacket '
@@ -1677,7 +1677,7 @@ def main():
 	server.register_function(customer_info_get_contact_name)
 	server.register_function(customer_info_get_contact_email)
 	server.register_function(customer_info_get_contact_phone)
-	
+
 	# Network settings
 	server.register_function(network_get_interface)
 	server.register_function(network_set_interface_static)

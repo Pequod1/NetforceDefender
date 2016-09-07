@@ -561,13 +561,13 @@ def sendNetworkNSLookup(target, server):
 	try:
 		return jsonrpc_server.network_do_nslookup(password_token.token, target, server)
 	except:
-		return None	
+		return None
 
 def sendNetworkWhois(domain):
 	try:
 		return jsonrpc_server.network_do_whois(password_token.token, domain)
 	except:
-		return None	
+		return None
 
 # System
 
@@ -657,7 +657,7 @@ def sendSystemGetNetstat(option):
 	except:
 		return None
 
-########################## Parse commands 
+########################## Parse commands
 
 def parseWebCommand(command, parameters):
 	if password_token == False:
@@ -763,7 +763,7 @@ def parseNetworkCommand(command, parameters):
 				return True
 		# Reason for not using server version: Need live view of it
 		subprocess.call(['/bin/ping', target, '-c', str(count)])
-		
+
 		return True
 	elif command == 'traceroute':
 		sendPing()
