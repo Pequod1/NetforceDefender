@@ -1252,7 +1252,7 @@ def ParseCommandConnected(command, parameters):
 		if command == 'disconnect':
 			sendDisconnect()
 			return True
-		if command == 'network' or command == 'log' or command == 'customer' or command == 'web' or command == 'system':
+		if command in [ 'network', 'log', 'customer', 'web', 'system' ]:
 			if parameters:
 				sub_command_split = splitCommand(parameters)
 
