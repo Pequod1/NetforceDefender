@@ -804,7 +804,7 @@ def customer_info_set_name(token, name):
 
 	# Update MonitRC file
 	content = []
-	try: 
+	try:
 		with open('/etc/monit/monitrc') as f:
 			for line in f:
 				if line.startswith(" subject: ["):
