@@ -406,7 +406,7 @@ check_package_exist_test ntp
 check_package_exist_test mysql-server
 check_package_exist_test fail2ban
 check_package_exist_test openvas
-check_package_exist_test ntopng
+#check_package_exist_test ntopng
 
 [ -n "$(lspci | grep VMware)" ] && check_package_exist_test open-vm-tools -y
 
@@ -436,7 +436,7 @@ check_process_exist_test openvassd
 check_process_exist_test openvasmd
 check_user_process_exist_test redis
 check_process_exist_test mysql
-check_process_exist_test ntopng
+#check_process_exist_test ntopng
 
 [ ${IS_ND} -eq 1 ] && check_process_exist_test snort
 
@@ -485,7 +485,7 @@ file_exist_test /etc/nginx/.htpasswd
 VAR_WWW=/var/www/html
 file_exist_test ${VAR_WWW}/index.html
 file_exist_test ${VAR_WWW}/kapp.html
-file_exist_test ${VAR_WWW}/ntopng.html
+#file_exist_test ${VAR_WWW}/ntopng.html
 file_exist_test ${VAR_WWW}/openvas.html
 file_exist_test ${VAR_WWW}/style.css
 

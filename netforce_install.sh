@@ -702,6 +702,9 @@ function install_landing_page {
 	chown -R www-data.www-data ${INSTALL_FILES_DIR}/landing_page/
 	chmod -R 400 ${INSTALL_FILES_DIR}/landing_page/
 	mv ${INSTALL_FILES_DIR}/landing_page/* ${LP_LOCATION}
+
+	# Disable Ntopng for now (#21)
+	rm ${INSTALL_FILES_DIR}/landing_page/ntopng.html
 }
 
 function install_nginx {
@@ -1282,7 +1285,7 @@ function base_install {
 	install_monit
 
 	install_openvas
-	install_ntopng
+	#install_ntopng
 
 	install_landing_page
 
