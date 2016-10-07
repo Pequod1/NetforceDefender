@@ -470,7 +470,7 @@ file_exist_test /etc/scripts/updateLScpu
 file_exist_test /etc/scripts/updateESmemory
 
 # Check for Curator stuff
-file_exist_test /usr/local/bin/curator
+file_exist_test /usr/bin/curator
 file_exist_test /etc/curator/actions.yml
 file_exist_test /etc/curator/curator.yml
 file_exist_test /etc/cron.daily/cleanOldIndicesES
