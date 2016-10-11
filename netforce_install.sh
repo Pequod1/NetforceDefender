@@ -836,6 +836,11 @@ function improve_ssh_security {
 
 	fromdos ${INSTALL_FILES_DIR}/ssh/append_to_sshd_config
 	cat ${INSTALL_FILES_DIR}/ssh/append_to_sshd_config >> /etc/ssh/sshd_config
+
+	# Improve password security: min passphrase length: 12 chars
+	apt install libpam-cracklib
+	# Minimum password length: 12, 5 characters must be different from the last one and return error if failure to put a good password after 1 try.
+	sed -i 's/pam_cracklib.so retry=3 minlen=8 difok=3/pam_cracklib.so minlen=12/' /etc/pam.d/common-password
 }
 
 function autoreboot_when_kernel_panic {
