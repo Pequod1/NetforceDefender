@@ -505,7 +505,63 @@ def web_regen_nginx_cert(token, subject):
 _WINLOGEVENT = "winlogevent"
 _supported_loggers = [ "cisco", "fortinet", "sophos", "paloalto", "ubiquiti", "aruba", "watchguard", "sonicwall", "barracuda", _WINLOGEVENT ]
 
+_LOG_RETENTION_UNITS = [ 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years' ]
+_LOG_CURATOR_CONF = '/etc/curator/actions.yml'
+
 _LS_PATH = "/etc/logstash/conf.d"
+
+def log_internal_retention_get():
+	with open(_LOG_CURATOR_CONF) as ifile:
+		content = ifile.readlines()
+	ret = ''
+	for line in content:
+		if 'unit_count:' in line:
+			vals = line.split()
+			val = vals[len(vals) - 1]
+			if len(ret) == 0:
+				ret = val
+			else:
+				return val + ' ' + ret
+		elif 'unit:' in line:
+			vals = line.split()
+			val = vals[len(vals) - 1]
+			if len(ret) == 0:
+				ret = val
+			else:
+				return ret + ' ' + val
+	return ''
+
+def log_retention_get(token):
+	log_command(token, None)
+	if isTokenValid(token) == False:
+		return False
+	return log_internal_retention_get()
+
+def log_retention_set(token, amount, unit):
+	log_command(token, 'Amount: ' + str(amount) + ' - unit: ' + str(unit))
+	if isTokenValid(token) == False or int(amount) <= 0 or unit not in _LOG_RETENTION_UNITS:
+		return False
+	with open(_LOG_CURATOR_CONF) as ifile:
+		content = ifile.readlines()
+	amount_diff = False
+	unit_diff = False
+	with open(_LOG_CURATOR_CONF, 'w') as ofile:
+		for line in content:
+			if 'unit_count:' in line:
+				vals = line.split()
+				val = vals[len(vals) - 1]
+				if val != amount:
+					amount_diff = True
+				line = line.replace(str(val), str(amount))
+			elif 'unit:' in line:
+				vals = line.split()
+				val = vals[len(vals) - 1]
+				line = line.replace(val, unit)
+				if val != unit:
+					unit_diff = True
+			ofile.write(line)
+	return True
+
 
 def log_list_supported_types(token):
 	log_command(token, None)
@@ -1653,6 +1709,8 @@ def main():
 	server.register_function(web_regen_nginx_cert)
 
 	# Log
+	server.register_function(log_retention_get)
+	server.register_function(log_retention_set)
 	server.register_function(log_list_supported_types)
 	server.register_function(log_list_enabled)
 	server.register_function(log_add_item)

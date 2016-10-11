@@ -3,7 +3,7 @@ actions:
     action: delete_indices
     description: >-
       Delete indices.  Find which to delete by first limiting the list to logstash- 
-      prefixed indices. Filter to delete anything older than 3 month.
+      prefixed indices.
     options:
       continue_if_exception: True
       disable_action: False

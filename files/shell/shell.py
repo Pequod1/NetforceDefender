@@ -326,6 +326,18 @@ def sendWebRegenNginxCert(subject):
 	except:
 		return None
 
+def sendLogRetentionGet():
+	try:
+		return jsonrpc_server.log_retention_get(password_token.token)
+	except:
+		return None
+
+def sendLogRetentionSet(amount, unit):
+	try:
+		return jsonrpc_server.log_retention_set(password_token.token, amount, unit)
+	except:
+		return None	
+
 def sendLogListSupportedTypes():
 	try:
 		return jsonrpc_server.log_list_supported_types(password_token.token)
@@ -969,8 +981,25 @@ def parseLogCommand(command, parameters):
 		print('types                         List supported log types')
 		print('add <type> <proto> <port>     Add log')
 		print('delete <type> <proto> <port>  Delete log item')
+		print('retention <length> <unit>     Get or set log rentention')
 		print('apply                         Apply changes')
 		sendPing()
+		return True
+	elif command == 'retention':
+		if parameters:
+			param_split = parameters.split(' ')
+			if len(param_split) != 2:
+				print('Invalid parameters. Expected length and unit')
+			elif sendLogRetentionSet(param_split[0], param_split[1]) == False:
+				print("Failed changing log retention length")
+		else:
+			val = sendLogRetentionGet()
+			if val == False:
+				print('Failed getting log retention length, login again and retry')
+			elif val == None:
+				print("Invalid login token, login again and retry")
+			else:
+				print("Length: " + val)
 		return True
 	elif command == 'list':
 		if parameters:
