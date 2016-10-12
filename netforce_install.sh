@@ -232,6 +232,7 @@
 #                            This process takes an hour to do but is
 #                            not mandatory to get started and can be
 #                            done after the installation
+# --install-elastalert <Yes/No>: Install elastalert
 # --from-email: From email for when sending alert emails
 # --email-password: Password for the from email.
 #                   No single quotes in password or script will fail
@@ -1209,6 +1210,7 @@ function base_install {
 					CRONJOB_PARAMS="${CRONJOB_PARAMS} --install base"
 				fi
 				[ ${SKIP_OPENVAS_UPDATE} -eq 1 ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --openvas-update No"
+				[ ${INSTALL_ELASTALERT} -eq 1 ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --install-elastalert No"
 				[ -n "${EMAIL_PROVIDER}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-provider ${EMAIL_PROVIDER}"
 				[ -n "${EMAIL_PASSWORD}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-password '${EMAIL_PASSWORD}'"
 				[ -n "${CERT_SUBJECT_LINE}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --cert-subject '${CERT_SUBJECT_LINE}'"
@@ -1285,7 +1287,12 @@ function base_install {
 
 	install_nginx
 	install_curator
-	install_elastalert
+	
+	if [ ${INSTALL_ELASTALERT} -eq 0 ]; then
+		install_elastalert
+	else
+		echo "Skipping elastalert installation"
+	fi
 
 	install_monit
 
@@ -1351,7 +1358,7 @@ function install_oinkmaster {
 }
 
 function add_generic_alert_elastalert {
-	echo '[*] Installing Generic alart for ElastAlert'
+	echo '[*] Installing Generic alert for ElastAlert'
 	local EA_BASEDIR=/etc/elastalert
 	local RULES_DIR=${EA_BASEDIR}/rules
 	local CMD_DIR=$(dirname ${RULES_DIR})/commands
@@ -1403,6 +1410,7 @@ LOG_INSTALL=0
 LOG_INSTALLED=0
 BASE_INSTALL=1
 SKIP_OPENVAS_UPDATE=0
+INSTALL_ELASTALERT=0
 FORCE_INSTALL=0
 FROM_EMAIL=myemail@example.com
 ALERT_EMAIL=myemail@example.com
@@ -1444,6 +1452,19 @@ do
 			fi
 			if [[ "${2^^}" =~ (NO?|FALSE|0) ]]; then
 				SKIP_OPENVAS_UPDATE=1
+			elif ! [[ "${2^^}" =~ (Y(ES)?|TRUE|1) ]]; then
+				echo "Invalid value. Expected one of the following: Yes or No"
+				exit 1
+			fi
+			shift
+			;;
+		--install-elastalert)
+			if [[ $2 =~ ^- ]]; then
+				echo "Missing parameter in skip elastalert, aborting."
+				exit 1
+			fi
+			if [[ "${2^^}" =~ (NO?|FALSE|0) ]]; then
+				INSTALL_ELASTALERT=1
 			elif ! [[ "${2^^}" =~ (Y(ES)?|TRUE|1) ]]; then
 				echo "Invalid value. Expected one of the following: Yes or No"
 				exit 1
@@ -1557,6 +1578,11 @@ echo "- Hard disk space left: ${DISK_LEFT}Mb ${TEMP_STR}"
 echo "- Base install: ${BASE_INSTALL}" | sed -e 's/1/Yes/g' -e 's/0/No/g'
 echo "- Netforce Defender install: ${ND_INSTALL} (Installed: ${ND_INSTALLED})" | sed -e 's/1/Yes/g' -e 's/0/No/g'
 echo "- Netforce Logger install: ${LOG_INSTALL} (Installed: ${LOG_INSTALLED})" | sed -e 's/1/Yes/g' -e 's/0/No/g'
+if [ ${INSTALL_ELASTALERT} -eq 1 ]; then
+	echo "- Skipping elastalert installation"
+else
+	echo "- Doing elastalert installation"
+fi
 if [ ${SKIP_OPENVAS_UPDATE} -eq 1 ]; then
 	echo "- Skipping OpenVAS data update"
 else
@@ -1641,7 +1667,9 @@ fi
 # It will install the files for the chosen installation type
 configure_logstash
 
-add_generic_alert_elastalert
+if [ ${INSTALL_ELASTALERT} -eq 0 ]; then
+	add_generic_alert_elastalert
+fi
 
 install_vm_tools
 
