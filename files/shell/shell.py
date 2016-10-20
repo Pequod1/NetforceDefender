@@ -1298,8 +1298,6 @@ def ParseCommandConnected(command, parameters):
 			else:
 				if password_token:
 					sendPing()
-				if command == 'ad' and system_internal_check_for('Netforce Logger'):
-					return False
 				level = command
 			return True
 	else:
