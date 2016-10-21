@@ -405,7 +405,6 @@ check_package_exist_test apache2-utils
 check_package_exist_test ntp
 check_package_exist_test mysql-server
 check_package_exist_test fail2ban
-check_package_exist_test openvas
 #check_package_exist_test ntopng
 
 [ -n "$(lspci | grep VMware)" ] && check_package_exist_test open-vm-tools -y
@@ -431,10 +430,6 @@ check_user_process_exist_test kibana
 check_process_exist_test nginx
 check_process_exist_test shell-webserver
 check_process_exist_test elastalert
-check_process_exist_test gsad
-check_process_exist_test openvassd
-check_process_exist_test openvasmd
-check_user_process_exist_test redis
 check_process_exist_test mysql
 #check_process_exist_test ntopng
 
@@ -461,7 +456,6 @@ file_exist_test ${MONIT_CONF_DIR}/disk_space.conf
 
 # Check various scripts installed in /etc/scripts
 file_exist_test /etc/scripts/dpkg-auto-update-ES-conf.sh
-file_exist_test /etc/cron.weekly/openvas
 file_exist_test /etc/scripts/auto_update_kibana_logstash.sh
 file_exist_test /etc/scripts/show_ip_login_prompt.sh
 file_exist_test /etc/scripts/regenerate_ssh_keys.sh
@@ -480,14 +474,6 @@ file_exist_test /etc/nginx/ssl/server.crt
 file_exist_test /etc/nginx/ssl/server.key
 file_exist_test /etc/nginx/sites-enabled/server
 file_exist_test /etc/nginx/.htpasswd
-
-# Landing page
-VAR_WWW=/var/www/html
-file_exist_test ${VAR_WWW}/index.html
-file_exist_test ${VAR_WWW}/kapp.html
-#file_exist_test ${VAR_WWW}/ntopng.html
-file_exist_test ${VAR_WWW}/openvas.html
-file_exist_test ${VAR_WWW}/style.css
 
 # Check Snort stuff
 if [ ${IS_ND} -eq 1 ]; then
@@ -580,14 +566,6 @@ file_exist_test ${EA_BASEDIR}/config.yaml
 [ ${IS_ND} -eq 1 ] && file_exist_test ${EA_RULES_DIR}/snort_prio_1.yaml
 file_exist_test ${EA_CMD_DIR}/generic_alert_elastalert
 file_exist_test ${EA_RULES_DIR}/generic_log_alert.yaml
-
-
-
-# Check OpenVAS data directories
-file_exist_test /var/lib/openvas/CA
-file_exist_test /var/lib/openvas/cert-data
-file_exist_test /var/lib/openvas/scap-data
-file_exist_test /var/lib/openvas/openvasmd
 
 # Postfix
 file_exist_test /etc/postfix/generic.db

@@ -228,10 +228,6 @@
 #
 # It has a few different parameters:
 # --install <base/defender/logger>: Installation type. Defender is the default
-# --openvas-update <Yes/No>: Do OpenVAS data download/processing
-#                            This process takes an hour to do but is
-#                            not mandatory to get started and can be
-#                            done after the installation
 # --install-elastalert <Yes/No>: Install elastalert
 # --from-email: From email for when sending alert emails
 # --email-password: Password for the from email.
@@ -691,23 +687,6 @@ function install_ntopng {
 	sed -i 's/ntopng.pid/ntopng.pid --community/' /etc/ntopng/ntopng.conf
 }
 
-function install_landing_page {
-	echo '[*] Installing Landing page'
-	local LP_LOCATION=/var/www/html
-	
-	# Cleanup existing files in www directory
-	rm -f ${LP_LOCATION}/*
-
-	# Disable Ntopng for now (#21)
-	rm ${INSTALL_FILES_DIR}/landing_page/ntopng.html
-
-	# Copy landing page
-	fromdos ${INSTALL_FILES_DIR}/landing_page/*
-	chown -R www-data.www-data ${INSTALL_FILES_DIR}/landing_page/
-	chmod -R 400 ${INSTALL_FILES_DIR}/landing_page/
-	mv ${INSTALL_FILES_DIR}/landing_page/* ${LP_LOCATION}
-}
-
 function install_nginx {
 	echo '[*] Installing Nginx'
 	apt-get install nginx -y
@@ -1107,40 +1086,6 @@ function add_iptables {
 	fromdos ${IPTABLES_SCRIPT}
 }
 
-function install_openvas {
-	# Note: REQUIRE NGINX
-	echo '[*] Installing OpenVAS'
-	apt install software-properties-common sqlite3 debconf-utils -y
-	add-apt-repository ppa:mrazavi/openvas -y
-	apt-get update
-
-	## Add it to auto-update
-	[ -z "$(grep openvas /etc/apt/apt.conf.d/50unattended-upgrades)" ] && sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"LP-PPA-mrazavi-openvas:xenial";/' /etc/apt/apt.conf.d/50unattended-upgrades
-
-	echo "openvas-scanner openvas-scanner/enable_redis select true" | debconf-set-selections
-	DEBIAN_FRONTEND=noninteractive apt-get install openvas -y --allow-unauthenticated
-
-	# Prevent GSA from listening to all (and on 80+443 which would prevent Kibana from working)
-	local GSA_DEFAULTS_FILENAME=$(grep 'DESC=' /etc/init.d/openvas-gsa | awk -F\" '{print $2}')
-	echo 'DAEMON_ARGS="--http-only --listen=127.0.0.1 -p 9392"' > /etc/default/${GSA_DEFAULTS_FILENAME}
-	# Default login/pass: admin/admin
-
-	# Add weekly cronjob
-	local OPENVAS_CRONJOB=/etc/cron.weekly/openvas
-	mv ${INSTALL_FILES_DIR}/openvas/openvas.cron.weekly ${OPENVAS_CRONJOB}
-	chmod +x ${OPENVAS_CRONJOB}
-	fromdos ${OPENVAS_CRONJOB}
-
-	if [ ${SKIP_OPENVAS_UPDATE} -eq 0 ]; then
-		# Execute it
-		echo '[*] Getting OpenVAS data. It will take about an hour, 700Mb need to be downloaded and processed'
-		bash ${OPENVAS_CRONJOB}
-	else
-		echo "Skipping updating OpenVAS data."
-		echo "Note: It will need to be done before using it."
-	fi
-}
-
 function base_install {
 	echo 'Installing base system'
 
@@ -1209,7 +1154,6 @@ function base_install {
 				else
 					CRONJOB_PARAMS="${CRONJOB_PARAMS} --install base"
 				fi
-				[ ${SKIP_OPENVAS_UPDATE} -eq 1 ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --openvas-update No"
 				[ ${INSTALL_ELASTALERT} -eq 1 ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --install-elastalert No"
 				[ -n "${EMAIL_PROVIDER}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-provider ${EMAIL_PROVIDER}"
 				[ -n "${EMAIL_PASSWORD}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-password '${EMAIL_PASSWORD}'"
@@ -1296,10 +1240,7 @@ function base_install {
 
 	install_monit
 
-	install_openvas
 	#install_ntopng
-
-	install_landing_page
 
 	add_iptables
 
@@ -1409,7 +1350,6 @@ ND_INSTALLED=0
 LOG_INSTALL=0
 LOG_INSTALLED=0
 BASE_INSTALL=1
-SKIP_OPENVAS_UPDATE=0
 INSTALL_ELASTALERT=0
 FORCE_INSTALL=0
 FROM_EMAIL=myemail@example.com
@@ -1441,19 +1381,6 @@ do
 				LOG_INSTALL=1
 			else
 				echo "Unknown parameter: $2. Valid values: base, defender, logger"
-				exit 1
-			fi
-			shift
-			;;
-		--openvas-update)
-			if [[ $2 =~ ^- ]]; then
-				echo "Missing parameter in OpenVAS update, aborting."
-				exit 1
-			fi
-			if [[ "${2^^}" =~ (NO?|FALSE|0) ]]; then
-				SKIP_OPENVAS_UPDATE=1
-			elif ! [[ "${2^^}" =~ (Y(ES)?|TRUE|1) ]]; then
-				echo "Invalid value. Expected one of the following: Yes or No"
 				exit 1
 			fi
 			shift
@@ -1582,11 +1509,6 @@ if [ ${INSTALL_ELASTALERT} -eq 1 ]; then
 	echo "- Skipping elastalert installation"
 else
 	echo "- Doing elastalert installation"
-fi
-if [ ${SKIP_OPENVAS_UPDATE} -eq 1 ]; then
-	echo "- Skipping OpenVAS data update"
-else
-	echo "- Doing OpenVAS data update"
 fi
 echo "- From email: ${FROM_EMAIL}"
 if [ -n "${EMAIL_PASSWORD}" ]; then

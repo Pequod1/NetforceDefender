@@ -3,8 +3,6 @@
 ## What is it?
 
 * SIEM
-* Network traffic analysis
-* Vulnerability testing
 
 ## License
 
@@ -25,5 +23,3 @@ Check out the [wiki](../../wiki)
 ## Screenshots
 
 ![alt text](https://github.com/MainNerve/NetforceDefender/blob/master/screenshots/login_prompt.png "Login prompt")
-
-![alt text](https://github.com/MainNerve/NetforceDefender/blob/master/screenshots/landing_page.png "Landing page")
