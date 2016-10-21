@@ -1523,6 +1523,7 @@ if [ -n "${CERT_SUBJECT_LINE}" ]; then
 else
 	echo "- Using default certificate subject with email address: ${ALERT_EMAIL}"
 fi
+[ -f "$(dirname ${THIS_FILE})/extra.sh" ] && echo "- Installing extra stuff at the end of the script"
 
 # Some more checks
 if [ ${ND_INSTALL} -eq 0 ] && [ ${LOG_INSTALL} -eq 0 ]; then
