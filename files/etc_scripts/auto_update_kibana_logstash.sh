@@ -244,25 +244,10 @@ KIBANA_BASE=/opt/kibana
 function kibana_update_configuration {
 	echo 'Updating Kibana configuration'
 	local KIBANA_LOG_FILE=/var/log/kibana.log
-	sed -i 's/# server.host: "0.0.0.0"/server.host: "127.0.0.1"/' /opt/kibana/config/kibana.yml
-	sed -i "s,# logging.dest: stdout,logging.dest: ${KIBANA_LOG_FILE}," /opt/kibana/config/kibana.yml
-	sed -i 's,# server.basePath: "",server.basePath: "/kibana",' /opt/kibana/config/kibana.yml
+	sed -i "s,# logging.dest: stdout,logging.dest: ${KIBANA_LOG_FILE}," /etc/kibana/kibana.yml
+	sed -i 's,#server.basePath: "",server.basePath: "/kibana",' /etc/kibana/kibana.yml
 	touch ${KIBANA_LOG_FILE}
 	chown kibana.kibana ${KIBANA_LOG_FILE}
-}
-
-function kibana_patch {
-	echo "Patching Kibana"
-	local KIBANA_MEM_USAGE_PATCH="${KIBANA_PATCH_DIR}/memory.diff"
-	if [ -f ${KIBANA_MEM_USAGE_PATCH} ]; then
-		# Patch to fix memory consumption issue (limit to 250Mb)
-		# https://github.com/elastic/kibana/issues/5170
-		cd ${KIBANA_BASE}/bin
-		fromdos ${KIBANA_MEM_USAGE_PATCH}
-		patch -i ${KIBANA_MEM_USAGE_PATCH}
-	else
-		echo "Missing memory patch ${KIBANA_MEM_USAGE_PATCH}, skipping"
-	fi
 }
 
 function kibana_restart {
@@ -283,30 +268,16 @@ function kibana_update_install {
 	apt-mark hold kibana
 
 	kibana_update_configuration
-	kibana_patch
 	kibana_restart
 }
 
 ################################### LOGSTASH #########################
 LS_DEFAULTS=/etc/default/logstash
 
-function logstash_update_configuration {
-	echo 'Update Logstash configuration'
-	# Make sure Logstash configuration file is up to date
-
-	# Update amount of CPU
-	/etc/scripts/updateLScpu
-
-	# Auto-kill if failing to stop (which happens from time to time)
-	sed -i 's/KILL_ON_STOP_TIMEOUT=0/KILL_ON_STOP_TIMEOUT=1/' ${LS_DEFAULTS}
-	sed -i 's/#KILL_ON_STOP_TIMEOUT=0/KILL_ON_STOP_TIMEOUT=1/' ${LS_DEFAULTS}
-	sed -i 's/#KILL_ON_STOP_TIMEOUT=1/KILL_ON_STOP_TIMEOUT=1/' ${LS_DEFAULTS}
-}
-
 function logstash_install_plugins {
 	echo 'Install Logstash plugins'
 	# Reinstall plugins (plugins get erased after update and it will not start because we're trying to use one of them)
-	local LS_DIR=/opt/logstash
+	local LS_DIR=/usr/share/logstash
 	cd ${LS_DIR}
 	for ((i=0; i < ${#LS_PLUGINS[@]}; i++))
 	do
@@ -341,7 +312,6 @@ function logstash_update_install {
 	apt-get -o Dpkg::Options::="--force-confnew" -y --allow-unauthenticated install logstash
 	apt-mark hold logstash
 
-	logstash_update_configuration
 	logstash_install_plugins
 	logstash_add_to_group
 	logstash_restart

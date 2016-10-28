@@ -506,15 +506,24 @@ function install_openjdk {
 	fi
 }
 
+function add_elastic_apt_repository {
+	local ELASTIC_VERSION="5.x"
+	wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+	if [ -z "$(grep 'artifacts.elastic.co' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
+		echo "deb https://artifacts.elastic.co/packages/${ELASTIC_VERSION}/apt stable main" >> /etc/apt/sources.list.d/elastic.list
+		apt-get update
+		return 1
+	fi
+	return 0
+}
+
 function install_elasticsearch {
 	install_openjdk
 
 	echo "[*] Install ElasticSearch"
-	apt-get install bc -y # We need bc before installing 
-	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-	if [ -z "$(grep '/elasticsearch' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
-		echo 'deb http://packages.elastic.co/elasticsearch/2.x/debian stable main' >> /etc/apt/sources.list.d/elastic.list
-
+	apt-get install bc -y # We need bc before installing
+	add_elastic_apt_repository
+	if [ $? -eq 1 ]; then
 		# Auto-Update ES memory
 		local UPDATE_ES_MEM_SCRIPT="/etc/scripts/updateESmemory"
 		mv ${INSTALL_FILES_DIR}/elasticsearch/updateESmemory ${UPDATE_ES_MEM_SCRIPT}
@@ -539,8 +548,6 @@ function install_elasticsearch {
 
 		# Add it to DPKG post invoke
 		echo "DPkg::Post-Invoke {\"/bin/bash ${DPKG_FILENAME}\"; };" > /etc/apt/apt.conf.d/99zautoupdateelasticsearchconf
-
-		apt-get update
 	fi
 
 	apt-get install elasticsearch curl -y
@@ -562,16 +569,8 @@ LS_KIBANA_AUTO_UPDATE_SCRIPT=/etc/scripts/auto_update_kibana_logstash.sh
 function install_kibana {
 	# Current version: grep '>Kibana 4' kibana | head -n 1 | awk '{print $2}' | awk -F\< '{print $1}'
 	# Installed version: grep 'Kibana 4' /opt/kibana/README.txt | head -n 1 | awk '{print $2}' | awk -F\< '{print $1}'
-	local KIBANA_VERSION=4.6
 	echo "[*] Install Kibana"
-	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-	if [ -z "$(grep '/kibana' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
-		echo "deb http://packages.elastic.co/kibana/${KIBANA_VERSION}/debian stable main" >> /etc/apt/sources.list.d/elastic.list
-		# TODO: Add to auto-update
-		# They need to fix their Release file https://github.com/elastic/kibana/issues/6262
-		# https://askubuntu.com/questions/87849/how-to-enable-silent-automatic-updates-for-any-repository
-		apt-get update
-	fi
+	add_elastic_apt_repository
 
 	# Install auto install/update Kibana/Logstash
 	install_autoupdate_logstash_kibana
@@ -622,21 +621,7 @@ function install_logstash {
 	install_openjdk
 
 	echo "[*] Installing logstash"
-	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-	if [ -z "$(grep '/logstash' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
-		echo 'deb http://packages.elastic.co/logstash/2.4/debian stable main' >> /etc/apt/sources.list.d/elastic.list
-		apt-get update
-		## Add it to auto-update
-		#sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"Logstash:stable";/' /etc/apt/apt.conf.d/50unattended-upgrades
-	fi
-
-	# Auto-Update LS CPU
-	local UPDATE_LS_CPU_SCRIPT="/etc/scripts/updateLScpu"
-	mv ${INSTALL_FILES_DIR}/etc_scripts/updateLScpu ${UPDATE_LS_CPU_SCRIPT}
-	fromdos ${UPDATE_LS_CPU_SCRIPT}
-	chmod +x ${UPDATE_LS_CPU_SCRIPT}
-	# Create cronjob
-	ln -s ${UPDATE_LS_CPU_SCRIPT} /etc/cron.hourly/updateLScpu
+	add_elastic_apt_repository
 
 	# Install auto install/update Kibana/Logstash
 	install_autoupdate_logstash_kibana

@@ -225,16 +225,15 @@ RESTART_ES=0
 TOTAL_MEMORY=$(free | grep -E '^Mem:' | awk '{print $2}')
 MEM_TO_GIVE=$(echo "${TOTAL_MEMORY}/1850000" | bc)
 
-if [ $(grep -E '^#ES_HEAP_SIZE' /etc/default/elasticsearch | wc -l) -gt 0 ]; then
-	# If commented out, we have to update memory
-	sed -i "s/^\(#ES_HEAP_SIZE=\).*/ES_HEAP_SIZE=${MEM_TO_GIVE}g/" /etc/default/elasticsearch
-	RESTART_ES=1
-else
+JVM_OPTIONS_FILE="/etc/elasticsearch/jvm.options"
+
+if [ $(grep -E '^-Xms' ${JVM_OPTIONS_FILE} | wc -l) -gt 0 ]; then
 	# Get current value
-	CURRENT_AMOUNT_MEMORY=$(grep -E '^ES_HEAP_SIZE' /etc/default/elasticsearch | awk -F= '{print $2}' | sed 's|[^0-9]||g')
+	CURRENT_AMOUNT_MEMORY=$(grep -E '^-Xms' ${JVM_OPTIONS_FILE} | awk -Fs '{print $2}' | sed 's|[^0-9]||g')
 	# Compare it
 	if [ ${MEM_TO_GIVE} -ne ${CURRENT_AMOUNT_MEMORY} ]; then
-		sed -i "s/^\(ES_HEAP_SIZE=\).*/ES_HEAP_SIZE=${MEM_TO_GIVE}g/" /etc/default/elasticsearch
+		sed -i "s/^$(grep -E '^-Xms' ${JVM_OPTIONS_FILE})/-Xms${MEM_TO_GIVE}g/" ${JVM_OPTIONS_FILE}
+		sed -i "s/^$(grep -E '^-Xmx' ${JVM_OPTIONS_FILE})/-Xmx${MEM_TO_GIVE}g/" ${JVM_OPTIONS_FILE}
 		RESTART_ES=1
 	fi
 fi

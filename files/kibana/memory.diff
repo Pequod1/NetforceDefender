@@ -1,8 +1,0 @@
---- kibana.old	2016-01-06 11:31:26.931410779 -0700
-+++ kibana	2016-01-06 11:30:37.875167523 -0700
-@@ -21,4 +21,4 @@
-   exit 1
- fi
- 
--exec "${NODE}" $NODE_OPTIONS "${DIR}/src/cli" ${@}
-+exec "${NODE}" $NODE_OPTIONS --max-old-space-size=250 "${DIR}/src/cli" ${@}

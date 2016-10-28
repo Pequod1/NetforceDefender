@@ -241,9 +241,8 @@ if [ "${CURRENT_ES_VERSION}" != "$(cat ${VERSION_STORAGE_FILE})" ]; then
 		echo '1' > /proc/sys/vm/swappiness
 	fi
 
-	# Disable swapping in ElasticSearch (handle a few different cases)
-	sed -i 's/# bootstrap.mlockall: true/bootstrap.mlockall: true/' /etc/elasticsearch/elasticsearch.yml
-	sed -i 's/#bootstrap.mlockall: true/bootstrap.mlockall: true/' /etc/elasticsearch/elasticsearch.yml
+	# Disable swapping in ElasticSearch
+	sed -i 's/#bootstrap.memory_lock: true/bootstrap.memory_lock: true/' /etc/elasticsearch/elasticsearch.yml
 
 	# Update memory
 	UPDATE_ES_MEM_SCRIPT norestart

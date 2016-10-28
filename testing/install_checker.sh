@@ -460,7 +460,6 @@ file_exist_test /etc/scripts/auto_update_kibana_logstash.sh
 file_exist_test /etc/scripts/show_ip_login_prompt.sh
 file_exist_test /etc/scripts/regenerate_ssh_keys.sh
 file_exist_test /etc/scripts/generate_certificate.sh
-file_exist_test /etc/scripts/updateLScpu
 file_exist_test /etc/scripts/updateESmemory
 
 # Check for Curator stuff
