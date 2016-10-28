@@ -534,7 +534,7 @@ function install_elasticsearch {
 
 		# Add auto-config update for ElasticSearch
 		local DPKG_FILENAME="/etc/scripts/dpkg-auto-update-ES-conf.sh"
-		local CUR_LS_VER_STORAGE_FILE=/var/elasticsearch/CURRENT_VERSION
+		local CUR_ES_VER_STORAGE_FILE=/var/elasticsearch/CURRENT_VERSION
 		mkdir -p $(dirname ${DPKG_FILENAME}) 2>/dev/null
 		mv ${INSTALL_FILES_DIR}/elasticsearch/dpkg-auto-update-ES-conf.sh ${DPKG_FILENAME}
 		# Update link to updateESmemory
@@ -543,8 +543,8 @@ function install_elasticsearch {
 		chmod +x ${DPKG_FILENAME}
 		fromdos ${DPKG_FILENAME}
 
-		mkdir -p $(dirname ${CUR_LS_VER_STORAGE_FILE})
-		echo 0 > ${CUR_LS_VER_STORAGE_FILE}
+		mkdir -p $(dirname ${CUR_ES_VER_STORAGE_FILE})
+		echo 0 > ${CUR_ES_VER_STORAGE_FILE}
 
 		# Add it to DPKG post invoke
 		echo "DPkg::Post-Invoke {\"/bin/bash ${DPKG_FILENAME}\"; };" > /etc/apt/apt.conf.d/99zautoupdateelasticsearchconf
