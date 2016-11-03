@@ -462,31 +462,55 @@ function install_postfix {
 	fi
 }
 
-function install_elasticdump {
-	which elasticdump 2>/dev/null >/dev/null
-	if [ $? -ne 0 ]; then
-		echo '[*] Installing Elasticdump'
-		apt-get install npm -y
-		npm install elasticdump -g
-
-		# Workaround since Elasticdump load 'node' environment and in Ubuntu it is called nodejs
-		ln -s $(which nodejs) /usr/local/bin/node
-	fi
-}
-
 function install_kibana_dashboard {
+	local ES_CONFIG="/etc/elasticsearch/elasticsearch.yml"
+	local TMP_ES_DIR=$(mktemp -d)
 	echo '[*] Installing Kibana Dashboard'
-	install_elasticdump
-
-	# Create index for logstash
-	service elasticsearch start
 	apt-get install curl -y
+	chown -R elasticsearch.elasticsearch ${TMP_ES_DIR}
+
+	echo "path.repo: [\"${TMP_ES_DIR}\"]" >> ${ES_CONFIG}
+	service elasticsearch stop
 	sleep 10
+	service elasticsearch start
+	# Give it time to start (memory locking takes time)
+	echo 'Waiting for ElasticSearch to start'
+	local MAX_TRIES=12
+	while [ ${MAX_TRIES} -gt 0 ]; do
+		curl 'http://localhost:9200/_cluster/health'
+		[ $? -eq 0 ] && break
+		sleep 10
+		MAX_TRIES=$((MAX_TRIES-1))
+	done
+	sleep 15
+
+	# Delete Kibana index
+	service kibana stop 2>/dev/null
 	curl -XDELETE 'http://localhost:9200/.kibana'
-	curl -XPUT "localhost:9200/.kibana?pretty"
-	local DASHBOARD_JSON="${INSTALL_FILES_DIR}/kibana/dashboard.json"
-	elasticdump --input=${DASHBOARD_JSON} --output=http://localhost:9200/.kibana
-	rm ${DASHBOARD_JSON}
+
+	# Import snapshot
+	tar -zxf ${INSTALL_FILES_DIR}/kibana/dashboard.tar.gz -C ${TMP_ES_DIR}
+	chown -R elasticsearch.elasticsearch ${TMP_ES_DIR}
+	curl -XPUT 'http://localhost:9200/_snapshot/dashboard' -d "{
+    \"type\": \"fs\",
+    \"settings\": {
+        \"location\": \"${TMP_ES_DIR}/dashboard\"
+    }
+}"
+
+	# Stop logstash or it might interfere with restore
+	service logstash stop 2>/dev/null
+
+
+	# Export:
+	#curl -XPUT 'http://localhost:9200/_snapshot/dashboard/snapshot_1?wait_for_completion=true'
+	curl -XPOST 'http://localhost:9200/_snapshot/dashboard/snapshot_1/_restore?wait_for_completion=true'
+
+	# Clean up
+	curl -XDELETE 'http://localhost:9200/_snapshot/dashboard'
+	rm -rf ${TMP_ES_DIR}
+	sed -i '/path.repo/d' ${ES_CONFIG}
+	# We should restart it but it doesn't matter since the system will reboot at the end
 }
 
 function is_package_installed {

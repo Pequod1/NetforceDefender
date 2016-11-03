@@ -570,9 +570,6 @@ file_exist_test ${EA_RULES_DIR}/generic_log_alert.yaml
 file_exist_test /etc/postfix/generic.db
 file_exist_test /etc/postfix/sasl_passwd.db
 
-# Elasticdump
-file_exist_test /usr/local/bin/elasticdump
-
 EXTRA_FILE="$(dirname ${THIS_FILE})/extra.sh"
 if [ -f ${EXTRA_FILE} ]; then
 	echo "Something extra is to be checked."
