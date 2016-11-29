@@ -439,6 +439,9 @@ check_process_exist_test mysql
 
 echo '[*] Checking files'
 
+# Livepatch
+file_exist_test /snap/bin/canonical-livepatch
+
 # SSH keys
 file_exist_test /etc/ssh/ssh_host_ed25519_key
 file_exist_test /etc/ssh/ssh_host_ed25519_key.pub
@@ -607,6 +610,11 @@ if [ -f ${ND_LOG_FILE} ]; then
 	if [ ${HSM_ISSUES} -gt 0 ]; then
 		echo "Failed downloading packages (${HSM_ISSUES}). Look for 'Hash Sum mismatch' or 'will resolve these dependencies' in ${ND_LOG_FILE}"
 	fi
+fi
+
+LIVEPATCH_STATUS=$(canonical-livepatch status | grep "kernel" | wc -l)
+if [ ${LIVEPATCH_STATUS} -eq 0 ]; then
+	echo 'NOTE: Livepatch is not enabled.'
 fi
 
 echo "All checks done"

@@ -345,6 +345,28 @@ function fix_potential_apt_issues {
 	DEBIAN_FRONTEND=noninteractive apt-get install apt -y
 }
 
+# Livepatch is a 2 step process. For whatever reason, it cannot be run immediately
+# So, install it, reboot then use it
+function install_livepatch_part1 {
+	# We install it no matter what. Users might not have the key at install time
+	# Apparently, snap are automatically updated.
+	echo '[*] Installing Livepatch'
+	apt-get install snapd -y
+	snap install canonical-livepatch
+}
+
+function install_livepatch_part2 {
+	echo '[*] Setting up livepatch'
+
+	# Install it if the key is provided
+	if [ -n "${LIVEPATCH_TOKEN}" ]; then
+		/snap/bin/canonical-livepatch enable ${LIVEPATCH_TOKEN}
+	else
+		echo "Livepatch token not supplied."
+		echo "Run \"canonical-livepatch enable TOKEN\" and replace TOKEN by the token obtained on https://ubuntu.com/livepatch"
+	fi
+}
+
 function install_kdump {
 	# https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 	# If crashed, results will be in /var/crash
@@ -1129,6 +1151,10 @@ function base_install {
 		# Temporarily remove molly-guard
 		apt-get remove molly-guard -y
 
+		# Install Livepatch
+		install_livepatch_part1
+		NEED_REBOOT=1
+
 		# Require reboot
 		install_kdump
 		NEED_REBOOT=1
@@ -1167,6 +1193,7 @@ function base_install {
 				[ -n "${EMAIL_PROVIDER}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-provider ${EMAIL_PROVIDER}"
 				[ -n "${EMAIL_PASSWORD}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --email-password '${EMAIL_PASSWORD}'"
 				[ -n "${CERT_SUBJECT_LINE}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --cert-subject '${CERT_SUBJECT_LINE}'"
+				[ -n "${LIVEPATCH_TOKEN}" ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --livepatch ${LIVEPATCH_TOKEN}"
 				[ ${FORCE_INSTALL} -eq 1 ] && CRONJOB_PARAMS="${CRONJOB_PARAMS} --force-install Yes"
 				echo "@reboot export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin && cd ${CURRENT_DIR} && bash ${0} ${CRONJOB_PARAMS} >>/var/log/netforce_install.log 2>&1 " >> /var/spool/cron/crontabs/root
 				chmod 600 /var/spool/cron/crontabs/root
@@ -1254,6 +1281,8 @@ function base_install {
 	add_iptables
 
 	update_motd
+
+	install_livepatch_part2
 }
 
 function install_oinkmaster {
@@ -1366,6 +1395,7 @@ ALERT_EMAIL=myemail@example.com
 EMAIL_PROVIDER="office365"
 EMAIL_PASSWORD=""
 CERT_SUBJECT_LINE=""
+LIVEPATCH_TOKEN=""
 
 EMAIL_REGEXP="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
 
@@ -1374,6 +1404,14 @@ do
 	key="$1"
 
 	case $key in
+		--livepatch)
+			if [[ $2 =~ ^- ]]; then
+				echo "Missing parameter in install type, aborting."
+				exit 1
+			fi
+			LIVEPATCH_TOKEN="$2"
+			shift
+			;;
 		--install)
 			if [[ $2 =~ ^- ]]; then
 				echo "Missing parameter in install type, aborting."
@@ -1531,6 +1569,11 @@ if [ -n "${CERT_SUBJECT_LINE}" ]; then
 	echo "- Custom Nginx certificate subject: ${CERT_SUBJECT_LINE}"
 else
 	echo "- Using default certificate subject with email address: ${ALERT_EMAIL}"
+fi
+if [ -n "${LIVEPATCH_TOKEN}" ]; then
+	echo "- Livepatch token: ${LIVEPATCH_TOKEN}"
+else
+	echo '- Livepatch token: NOT SPECIFIED'
 fi
 [ -f "$(dirname ${THIS_FILE})/extra.sh" ] && echo "- Installing extra stuff at the end of the script"
 

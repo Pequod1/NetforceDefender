@@ -583,6 +583,18 @@ def sendNetworkWhois(domain):
 
 # System
 
+def sendSystemLivepatchGet():
+	try:
+		return jsonrpc_server.system_livepatch_get(password_token.token)
+	except:
+		return None
+
+def sendSystemLivepatchSet(livepatch_token):
+	try:
+		return jsonrpc_server.system_livepatch_set(password_token.token, livepatch_token)
+	except:
+		return None
+
 def sendSystemStatus(item):
 	try:
 		return jsonrpc_server.system_status(password_token.token, item)
@@ -1071,9 +1083,24 @@ def parseSystemCommand(command, parameters):
 		print('uptime                        Show server uptime')
 		print('ps [modifier]                 Show process list')
 		print('netstat [listen|open|all]     Display ports (default: all)')
+		print('livepatch [token]             Get livepatch status (or set token and enable)')
 		print('reboot                        Reboot system')
 		print('shutdown                      Shutdown system')
 		sendPing()
+		return True
+	elif command == 'livepatch':
+		if len(parameters) == 0:
+			result = sendSystemLivepatchGet()
+			if is_var_string(result):
+				print(result)
+			else:
+				print_if_error(None, "getting livepatch status")
+		else:
+			result = sendSystemLivepatchSet(parameters)
+			if is_var_string(result):
+				print(result)
+			else:
+				print_if_error(None, "enabling livepatch")
 		return True
 	elif command == 'disk_usage':
 		if len(parameters) != 0:

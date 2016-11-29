@@ -1649,6 +1649,31 @@ def system_get_uptime(token):
 	uptime = subprocess.check_output([ 'uptime' ], stderr=subprocess.STDOUT)
 	return uptime.strip()
 
+def internal_system_livepatch_get_status():
+	content = ""
+	try:
+		content = subprocess.check_output([ '/snap/bin/canonical-livepatch', 'status'], stderr=subprocess.STDOUT)
+	except subprocess.CalledProcessError as ex:
+		content = ex.output
+	if "not enabled" in content:
+		return False
+	return True
+
+def system_livepatch_get(token):
+	log_command(token, None)
+	if isTokenValid(token) == False:
+		return False
+	# Return output of canonical-livepatch status (minus the last empty line) if enabled.
+	# If "not enabled" is found in the string, a token needs to be provided
+	if internal_system_livepatch_get_status() == False:
+		return "Not enabled"
+	return subprocess.check_output([ '/snap/bin/canonical-livepatch', 'status'], stderr=subprocess.STDOUT).replace('\n\n', '\n')[:-1]
+
+def system_livepatch_set(token, livepatch_token):
+	log_command(token, livepatch_token)
+	if isTokenValid(token) == False:
+		return False
+	return subprocess.check_output(['/snap/bin/canonical-livepatch', 'enable', livepatch_token]).replace('\n\n', '\n')[:-1]
 
 def system_get_ps(token, modifier):
 	log_command(token, modifier)
@@ -1763,6 +1788,8 @@ def main():
 	server.register_function(system_get_uptime)
 	server.register_function(system_get_ps)
 	server.register_function(system_get_netstat)
+	server.register_function(system_livepatch_get)
+	server.register_function(system_livepatch_set)
 
 	try:
 		print("Starting server on port " + str(DEFAULT_PORT))
