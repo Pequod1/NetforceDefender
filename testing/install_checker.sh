@@ -432,12 +432,16 @@ check_process_exist_test shell-webserver
 check_process_exist_test elastalert
 check_process_exist_test mysql
 #check_process_exist_test ntopng
+check_process_exist_test autochmod
 
 [ ${IS_ND} -eq 1 ] && check_process_exist_test snort
 
 ############################# FILE EXISTENCE TESTS ##################################
 
 echo '[*] Checking files'
+
+# Autochmod
+file_exist_test /etc/scripts/autochmod.sh
 
 # Livepatch
 file_exist_test /snap/bin/canonical-livepatch
