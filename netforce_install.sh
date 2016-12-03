@@ -375,13 +375,6 @@ function install_kdump {
 	sed -i 's|USE_KDUMP=0|USE_KDUMP=1|' /etc/default/kdump-tools
 }
 
-function fix_blk_update_request_fd0_errors {
-	echo '[*] Fixing fd0 errors'
-	[ -z "$(grep -E '^exit 0' /etc/rc.local)" ] && echo 'exit 0' >> /etc/rc.local # Ubuntu 16.04 is lacking the exit 0 at the end of /etc/rc.local
-	sed -i "s|^exit 0|rmmod floppy\nexit 0|" /etc/rc.local
-	#echo "blacklist floppy" >> /etc/modprobe.d/blacklist.conf
-}
-
 function install_ntp {
 	echo '[*] Installing NTPd'
 	apt-get install ntp -y
@@ -1206,8 +1199,6 @@ function base_install {
 	fi
 
 	rm .updated
-
-	fix_blk_update_request_fd0_errors
 
 	# If there is more than one kernel, we might want to remove the old stuff (now since it's updated)
 	if [ $(ls /boot/vmlinuz-* | wc -l) -gt 1 ]; then
