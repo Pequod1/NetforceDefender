@@ -783,7 +783,7 @@ function install_autochmod {
 		apt-get install inotify-tools -y
 		mkdir -p $(dirname "${AUTOCHMOD_FILENAME}") 2>/dev/null
 
-		mv ${INSTALL_FILES_DIR}/etc_scripts/$(basename ${AUTOCHMOD_FILENAME}) ${AUTOCHMOD_FILENAME}
+		mv ${INSTALL_FILES_DIR}/autochmod/$(basename ${AUTOCHMOD_FILENAME}) ${AUTOCHMOD_FILENAME}
 		chmod +x ${AUTOCHMOD_FILENAME}
 		fromdos ${AUTOCHMOD_FILENAME}
 	fi
@@ -823,9 +823,14 @@ function install_rkhunter {
 
 		# Autochmod rkhunter log file
 		install_autochmod
-		[ -z "$(grep -E '^exit 0' /etc/rc.local)" ] && echo 'exit 0' >> /etc/rc.local # Ubuntu 16.04 is lacking the exit 0 at the end of /etc/rc.local
-		sed -i "s|^exit 0|${AUTOCHMOD_FILENAME} /var/log/rkhunter.log \&\nexit 0|" /etc/rc.local
-		chmod +x /etc/rc.local
+
+		# Make it a service
+		local SERVICE_FILE=${SYSTEMD_BASE_DIR}/AutochmodRKhunter.service
+		mkdir -p ${SYSTEMD_BASE_DIR}
+		chmod 755 ${SYSTEMD_BASE_DIR}
+		mv ${INSTALL_FILES_DIR}/autochmod/$(basename ${SERVICE_FILE}) ${SERVICE_FILE}
+		systemctl daemon-reload
+		systemctl enable $(basename ${SERVICE_FILE})
 	fi
 }
 

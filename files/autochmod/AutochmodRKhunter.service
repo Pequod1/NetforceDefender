@@ -1,0 +1,15 @@
+[Unit]
+Description=Autochmod Rkhunter
+After=syslog.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+#WorkingDirectory=/root/
+ExecStart=/etc/scripts/autochmod.sh /var/log/rkhunter.log
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

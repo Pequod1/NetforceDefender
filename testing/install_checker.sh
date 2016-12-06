@@ -442,6 +442,7 @@ echo '[*] Checking files'
 
 # Autochmod
 file_exist_test /etc/scripts/autochmod.sh
+file_exist_test ${SYSTEMD_BASE_DIR}/AutochmodRKhunter.service
 
 # Livepatch
 file_exist_test /snap/bin/canonical-livepatch
