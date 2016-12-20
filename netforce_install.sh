@@ -940,7 +940,7 @@ function configure_curator {
 	mv ${INSTALL_FILES_DIR}/curator/$(basename ${CLEAN_OLD_ES_INDEX_SCRIPT}) ${CLEAN_OLD_ES_INDEX_SCRIPT}
 	chmod +x ${CLEAN_OLD_ES_INDEX_SCRIPT}
 	fromdos ${CLEAN_OLD_ES_INDEX_SCRIPT}
-	sed -i "s,CURATOR_ETC,${CURATOR_ETC}," ${CLEAN_OLD_ES_INDEX_SCRIPT}
+	sed -i "s,CURATOR_ETC,${CURATOR_ETC},g" ${CLEAN_OLD_ES_INDEX_SCRIPT}
 }
 
 function install_curator {
