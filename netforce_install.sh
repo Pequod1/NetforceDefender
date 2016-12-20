@@ -954,7 +954,7 @@ function install_curator {
 		apt-get update
 	fi
 
-	apt-get install python-elasticsearch-curator -y
+	apt-get install elasticsearch-curator -y
 
 	configure_curator
 }
