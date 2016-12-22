@@ -1070,11 +1070,23 @@ function install_elastalert {
 	pip install --upgrade --force six
 	pip install jira
 	pip install PyStaticConfiguration
+	pip install stomp.py
 	cd /usr/local/src
-	wget https://github.com/Yelp/elastalert/archive/v${EA_VERSION}.tar.gz
-	tar -zxf v${EA_VERSION}.tar.gz
-	rm v${EA_VERSION}.tar.gz
-	cd elastalert-${EA_VERSION}
+	# Workaround for Elasticsearch 5.0 until it is merged (#28).
+	#wget https://github.com/Yelp/elastalert/archive/v${EA_VERSION}.tar.gz
+	#tar -zxf v${EA_VERSION}.tar.gz
+	#rm v${EA_VERSION}.tar.gz
+	#cd elastalert-${EA_VERSION}
+	if [ -n "$(git ls-remote --heads https://github.com/Yelp/elastalert.git | grep support_es5)" ]; then
+		git clone https://github.com/Yelp/elastalert.git
+		cd elastalert
+		git fetch origin
+		git checkout origin/support_es5
+		pip install elasticsearch>3.0
+	else
+		echo "ERROR: ElastAlert ES5 branch does not exist anymore, open a bug report to have it fixed."
+	fi
+	# End of workaround for Elasticsearch 5.0 (#28)
 	python setup.py install
 
 	# Set-up
