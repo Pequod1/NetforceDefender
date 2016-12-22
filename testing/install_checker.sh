@@ -586,10 +586,11 @@ if [ -f ${EXTRA_FILE} ]; then
 	bash ${EXTRA_FILE}
 fi
 
+echo "[*] Looking for errors in log files"
+
 # Looking for errors in the installation
 ND_LOG_FILE=/var/log/netforce_install.log
 if [ -f ${ND_LOG_FILE} ]; then
-	echo "[*] Looking for errors in log file"
 	LINE_ISSUES=$(grep -E 'line [0-9]+:' ${ND_LOG_FILE} | wc -l)
 	if [ ${LINE_ISSUES} -gt 0 ]; then
 		echo "Potential issue (${LINE_ISSUES}) in install script or another script ran during the installation. Look for 'line ' in ${ND_LOG_FILE}"
@@ -615,6 +616,11 @@ if [ -f ${ND_LOG_FILE} ]; then
 	if [ ${HSM_ISSUES} -gt 0 ]; then
 		echo "Failed downloading packages (${HSM_ISSUES}). Look for 'Hash Sum mismatch' or 'will resolve these dependencies' in ${ND_LOG_FILE}"
 	fi
+fi
+
+# Checking JournalCtl for ElastAlert
+if [ $(journalctl -xe -u ElastAlert.service | grep -E '(Traceback|ERROR|TransportError)' | wc -l) -gt 0 ]; then
+	echo 'ERROR: ElastAlert is running into issues. Check the log and report back if false positive: journalctl -xe -u ElastAlert.service'
 fi
 
 LIVEPATCH_STATUS=$(canonical-livepatch status | grep "kernel" | wc -l)
