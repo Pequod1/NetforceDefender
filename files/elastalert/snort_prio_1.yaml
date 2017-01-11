@@ -42,8 +42,7 @@ timeframe:
 # These filters are joined with AND and nested in a filtered query
 # For more info: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
-    - query:
-        query_string: {query: 'priority:1'}
+    - query_string: {query: 'priority:1'}
 
 # (Required)
 # The alert is use when a match is found

@@ -25,8 +25,7 @@ index: logstash-*
 # These filters are joined with AND and nested in a filtered query
 # For more info: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
-    - query:
-        query_string: {query: '_exists_:alert'}
+    - query_string: {query: '_exists_:alert'}
 
 silence:
   seconds: 1
