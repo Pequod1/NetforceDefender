@@ -1351,7 +1351,7 @@ function install_vm_tools {
 	if [ -n "$(lspci | grep VMware)" ] || [ -n "$(lspci | grep 'Hyper-V')" ]; then
 		[ -n "$(lspci | grep VMware)" ] && echo "VMware detected, installing Open VM Tools"
 		[ -n "$(lspci | grep 'Hyper-V')" ] && echo "Hyper-V detected, installing Open VM Tools"
-		apt-get install open-vm-tools -y
+		DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confnew" install open-vm-tools -y
 	fi
 	if [ -n "$(lspci | grep -i VirtualBox)" ]; then
 		apt-get install virtualbox-guest-dkms -y
