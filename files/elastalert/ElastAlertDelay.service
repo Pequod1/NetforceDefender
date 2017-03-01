@@ -1,0 +1,11 @@
+[Unit]
+Description=ElastAlert Delay
+Requires=elasticsearch.service
+After=syslog.target elasticsearch.service
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /etc/scripts/delay_start_ea.sh
+
+[Install]
+WantedBy=multi-user.target

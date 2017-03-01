@@ -1106,8 +1106,18 @@ function install_elastalert {
 	mkdir -p ${SYSTEMD_BASE_DIR}
 	chmod 755 ${SYSTEMD_BASE_DIR}
 	mv ${INSTALL_FILES_DIR}/elastalert/$(basename ${SERVICE_FILE}) ${SERVICE_FILE}
+	#systemctl daemon-reload
+	#systemctl enable $(basename ${SERVICE_FILE})
+	# Service needs to wait for ElasticSearch to be completely started
+	# However, ElasticSearch service ends before it is completely started
+	# So, here is a workaround script
+	mv ${INSTALL_FILES_DIR}/elastalert/delay_start_ea.sh /etc/scripts/delay_start_ea.sh
+	chmod +x /etc/scripts/delay_start_ea.sh
+	fromdos /etc/scripts/delay_start_ea.sh
+	local SERVICE_FILE_DELAY=${SYSTEMD_BASE_DIR}/ElastAlertDelay.service
+	mv ${INSTALL_FILES_DIR}/elastalert/$(basename ${SERVICE_FILE_DELAY}) ${SERVICE_FILE_DELAY}
 	systemctl daemon-reload
-	systemctl enable $(basename ${SERVICE_FILE})
+	systemctl enable $(basename ${SERVICE_FILE_DELAY})
 }
 
 function add_iptables {

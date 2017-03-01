@@ -573,6 +573,8 @@ file_exist_test ${EA_BASEDIR}/config.yaml
 [ ${IS_ND} -eq 1 ] && file_exist_test ${EA_RULES_DIR}/snort_prio_1.yaml
 file_exist_test ${EA_CMD_DIR}/generic_alert_elastalert
 file_exist_test ${EA_RULES_DIR}/generic_log_alert.yaml
+file_exist_test ${SYSTEMD_BASE_DIR}/ElastAlertDelay.service
+file_exist_test /etc/scripts/delay_start_ea.sh
 
 # Postfix
 file_exist_test /etc/postfix/generic.db
