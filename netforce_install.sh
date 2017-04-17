@@ -1184,6 +1184,9 @@ function base_install {
 			DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 		fi
 
+		# Install HWE (Hardware Enablement Stack) kernel
+		apt-get install --install-recommends linux-generic-hwe-16.04 -y
+
 		# ... and after. If the number is different, we might want to update
 		if [ -f /var/run/reboot-required ] || [ ${AMOUNT_KERNELS} -ne $(ls /boot/vmlinuz-* | wc -l) ] || [ ${NEED_REBOOT} -gt 0 ]; then
 			cd ${CURRENT_DIR}
