@@ -947,9 +947,11 @@ function install_curator {
 	echo "[*] Installing curator"
 	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
 	if [ -z "$(grep '/curator' /etc/apt/sources.list.d/elastic.list 2>/dev/null)" ]; then
-		echo 'deb http://packages.elastic.co/curator/4/debian stable main' >> /etc/apt/sources.list.d/elastic.list
+		# No more i386 in the repo
+		echo 'deb [arch=amd64] http://packages.elastic.co/curator/5/debian stable main' >> /etc/apt/sources.list.d/elastic.list
 		## Add it to auto-update
-		sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"Curator:stable";/' /etc/apt/apt.conf.d/50unattended-upgrades
+		## The other one (for ES and LS) is 'elastic', lower case 'e', so this is fine (not perfect, but OK).
+		sed -i 's/Unattended-Upgrade::Allowed-Origins {/Unattended-Upgrade::Allowed-Origins {\n\t"Elastic:";/' /etc/apt/apt.conf.d/50unattended-upgrades
 
 		apt-get update
 	fi
