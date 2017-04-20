@@ -503,7 +503,7 @@ def web_regen_nginx_cert(token, subject):
 ################## Logs
 
 _WINLOGEVENT = "winlogevent"
-_supported_loggers = [ "cisco", "fortinet", "sophos", "paloalto", "ubiquiti", "aruba", "watchguard", "sonicwall", "barracuda", _WINLOGEVENT ]
+_supported_loggers = [ "cisco", "fortinet", "sophos", "paloalto", "ubiquiti", "aruba", "watchguard", "sonicwall", "barracuda", "endian", _WINLOGEVENT ]
 
 _LOG_RETENTION_UNITS = [ 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years' ]
 _LOG_CURATOR_CONF = '/etc/curator/actions.yml'
@@ -569,13 +569,7 @@ def log_list_supported_types(token):
 		return False
 	return _supported_loggers
 
-def log_list_enabled(token):
-	log_command(token, None)
-	if isTokenValid(token) == False:
-		return False
-	# ls /etc/logstash/conf.d/input-*.conf
-
-
+def log_internal_list_enabled():
 	input_list = [ ]
 	for item in [f for f in listdir(_LS_PATH) if isfile(join(_LS_PATH, f)) and f.startswith("input-")]:
 		# Parse the item
@@ -604,7 +598,13 @@ def log_list_enabled(token):
 		if log_type and log_protocol and log_port and log_type in _supported_loggers:
 			input_list.append(log_protocol + '://' + log_type + ':' + log_port)
 
-	return input_list
+def log_list_enabled(token):
+	log_command(token, None)
+	if isTokenValid(token) == False:
+		return False
+	# ls /etc/logstash/conf.d/input-*.conf
+
+	return log_internal_list_enabled()
 
 def log_internal_verify_variables(log_type, log_protocol, log_port):
 	if not log_type or not log_port or not log_protocol:
@@ -619,6 +619,20 @@ def log_internal_verify_variables(log_type, log_protocol, log_port):
 		return False
 	if log_type not in _supported_loggers:
 		return False
+
+	# Special case: those cannot use a port different than 514
+	# Aruba uses UDP, Endian allows both
+	if log_type == 'aruba' or log_type == 'endian':
+		if log_protocol == 'tcp' and log_type == 'aruba':
+			return false
+
+		# Check if we can allow both to coexist
+		enabled_list = log_internal_list_enabled()
+		for item in enabled_list:
+			if log_type == 'endian' and "tcp://aruba:" in item:
+				return log_protocol == 'tcp'
+			if log_type == 'aruba':
+				return log_protocol != "udp://endian:"				
 	return True
 
 def log_internal_get_filename_nodir(log_type, log_protocol, log_port):

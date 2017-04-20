@@ -248,13 +248,34 @@ if [ ${IFACE} = "lo" ]; then
 	#[ -z "$(/sbin/iptables-save | grep ntop)" ] && iptables -A INPUT ! -i lo -p tcp --dport 3000 -m comment --comment "ntop" -j DROP
 fi
 
-# If aruba is in the list, reroute the port.
+# If aruba/endian is in the list, reroute the port.
 if [ $(ls -1 /etc/logstash/conf.d/input-* | wc -l) -gt 0 ]; then
+	ARUBA_PRESENT=0
 	for file in /etc/logstash/conf.d/input-*
 	do
-		if [ $(grep type ${file} | awk '{print $3}') = 'aruba' ]; then
-			[ $(/sbin/iptables-save | /bin/grep PREROUTING | /bin/grep REDIRECT | /usr/bin/wc -l) -eq 0 ] && /sbin/iptables -t nat -A PREROUTING -p udp --dport 514 -j REDIRECT --to-ports $(grep 'port =>' /etc/logstash/conf.d/input-aruba.conf | awk '{print $3}')
+		FW_BRAND="$(grep type ${file} | awk '{print $3}')"
+		REDIRECT_PORT=$(grep 'port =>' ${file} | awk '{print $3}')
+		if [ "${FW_BRAND}" = 'aruba' ]; then
+			[ $(/sbin/iptables-save | /bin/grep PREROUTING | /bin/grep REDIRECT | /bin/grep udp | /usr/bin/wc -l) -eq 0 ] && /sbin/iptables -t nat -A PREROUTING -p udp --dport 514 -j REDIRECT --to-ports ${REDIRECT_PORT}
+			ARUBA_PRESENT=1
+		break
+		fi
+	done
+
+	# Handle the case where Aruba is present => Limited to TCP only (else, can do either TCP/UDP
+	for file in /etc/logstash/conf.d/input-*
+	do
+		FW_BRAND="$(grep type ${file} | awk '{print $3}')"
+		if [ "${FW_BRAND}" = 'endian' ]; then
+			REDIRECT_PORT=$(grep 'port =>' ${file} | awk '{print $3}')
+			PROTOCOL=$(head -n 1 ${file} | awk '{print $1}')
+			if [ ${ARUBA_PRESENT} -eq 1 ] && [ "${PROTOCOL}" = 'udp' ]; then
+				logger "Failed to add redirect for Endian firewall, Aruba already present. Switch Endian to TCP to solve the issue."
+			else
+				[ $(/sbin/iptables-save | /bin/grep PREROUTING | /bin/grep REDIRECT | /bin/grep ${PROTOCOL} | /usr/bin/wc -l) -eq 0 ] && /sbin/iptables -t nat -A PREROUTING -p udp --dport 514 -j REDIRECT --to-ports ${REDIRECT_PORT}
+			fi
 			break
+		break
 		fi
 	done
 fi

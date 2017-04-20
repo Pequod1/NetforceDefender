@@ -532,6 +532,7 @@ file_exist_test ${LS_CONF_DIR}/input-alerts.conf
 file_exist_test ${LS_CONF_DIR}/filter-alerts.conf
 file_exist_test ${LS_CONF_DIR}/filter-sophos.conf
 file_exist_test ${LS_CONF_DIR}/filter-paloalto.conf
+file_exist_test ${LS_CONF_DIR}/filter-endian.conf
 file_exist_test ${LS_CONF_DIR}/zzz_resolve_ports.conf
 [ $? -eq 1 ] && echo "missing Logstash ports resolution config file"
 
